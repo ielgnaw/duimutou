@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+
+    <title>堆木头</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="full-screen" content="true"/>
+    <meta name="screen-orientation" content="portrait"/>
+    <meta name="x5-fullscreen" content="true"/>
+    <meta name="360-fullscreen" content="true"/>
+    <link rel="stylesheet" href="./src/css/index.css">
+    <script src="http://s1.bdstatic.com/r/www/cache/ecom/esl/1-8-2/esl.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <section class="main-content">
+            <div class="guide-tip">
+                <div class="title">堆木头</div>
+                <div class="content"><div class="icon"></div>当木头移动到木头堆正上方时，点击屏幕放木头，尽可能的对齐木头。</div>
+                <div class="start"></div>
+            </div>
+            <div class="game-content">
+                <div class="score-panel">
+                    <div class="left">得分：<span>0</span></div>
+                    <div class="middle">等级：<span>1</span></div>
+                    <div class="right">连击：<span>0</span></div>
+                </div>
+                <div class="branch-container">
+                    <div class="branch-item">
+                        <div class="branch-left"></div>
+                        <div class="branch-middle"></div>
+                        <div class="branch-right"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    <script>
+        var globalData = (function () {
+            var width = document.documentElement.clientWidth;
+            var height = document.documentElement.clientHeight;
+
+            var section = document.querySelector('section');
+            section.style.width = width + 'px';
+            section.style.height = height + 'px';
+
+            var supportTouch = ('ontouchstart' in window) || window.DocumentTouch && document instanceof window.DocumentTouch;
+
+            return {
+                width: width,
+                height: height,
+                touchStartEvent: (supportTouch ? 'touchstart' : 'mousedown'),
+                touchMoveEvent: (supportTouch ? 'touchmove' : 'mousemove'),
+                touchEndEvent: (supportTouch ? 'touchend' : 'mouseup')
+            }
+        })();
+
+        require.config({
+            'baseUrl': 'src',
+            'paths': {},
+            'packages': [{
+                    'name': 'est',
+                    'location': '../dep/est/2.0.4/src',
+                    'main': 'lib/index'
+                }]
+        });
+        require(['index'], function (index) {
+            index.init();
+        });
+    </script>
+</body>
+</html>
