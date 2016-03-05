@@ -135,13 +135,6 @@ html {
             .ani-direction(alternate);
         }
 
-        &.dropdown {
-            .trans-property(transform);
-            .trans-duration(.1s);
-            .trans-timing-function(linear);
-            .trans-delay(0s);
-        }
-
         &.first {
             z-index: 20;
             -webkit-transform: translate3d(0, 0, 0);
@@ -153,15 +146,38 @@ html {
             width: 260px;
             height: 20px;
             margin-left: 5px;
-            background-image: url(../img/branch-middle1.png);
-            background-position: 0 0;
+            z-index: 1;
+            &.branch-middle1 {
+                background-image: url(../img/branch-middle1.png);
+            }
+            &.branch-middle2 {
+                background-image: url(../img/branch-middle2.png);
+            }
+            &.branch-middle3 {
+                background-image: url(../img/branch-middle3.png);
+            }
+            &.branch-middle4 {
+                background-image: url(../img/branch-middle4.png);
+            }
         }
 
         .branch-left {
             position: absolute;
             width: 10px;
             height: 20px;
-            background-image: url(../img/branch-left1.png);
+            z-index: 3;
+            &.branch-left1 {
+                background-image: url(../img/branch-left1.png);
+            }
+            &.branch-left2 {
+                background-image: url(../img/branch-left2.png);
+            }
+            &.branch-left3 {
+                background-image: url(../img/branch-left3.png);
+            }
+            &.branch-left4 {
+                background-image: url(../img/branch-left4.png);
+            }
         }
 
         .branch-right {
@@ -169,7 +185,19 @@ html {
             margin-left: 260px;
             width: 10px;
             height: 20px;
-            background-image: url(../img/branch-right1.png);
+            z-index: 2;
+            &.branch-right1 {
+                background-image: url(../img/branch-right1.png);
+            }
+            &.branch-right2 {
+                background-image: url(../img/branch-right2.png);
+            }
+            &.branch-right3 {
+                background-image: url(../img/branch-right3.png);
+            }
+            &.branch-right4 {
+                background-image: url(../img/branch-right4.png);
+            }
         }
     }
 }

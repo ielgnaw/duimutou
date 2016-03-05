@@ -3,6 +3,8 @@
  * @author ielgnaw(wuji0223@gmail.com)
  */
 
+/* global globalData*/
+
 define(function (require) {
 
     var create = require('./create');
@@ -35,6 +37,13 @@ define(function (require) {
     var BASE_SWING_DISTANCE = 40;
 
     /**
+     * .branch-item 的默认 margin-left
+     *
+     * @type {number}
+     */
+    var MARGIN_LEFT = 135;
+
+    /**
      * 游戏开始回调函数
      *
      * @param {Object} e 事件对象
@@ -45,7 +54,7 @@ define(function (require) {
         guideNode.style.display = 'none';
         gameNode.style.display = 'block';
     }
-    // 26
+
     /**
      * 点击屏幕放下木头
      *
@@ -55,32 +64,45 @@ define(function (require) {
         e.stopPropagation();
         e.preventDefault();
 
-        var topNode = document.querySelector('.last');
-        var translateX = 0;
+        var topNode = document.querySelector('.first');
 
         var transform = window.getComputedStyle(topNode).transform || window.getComputedStyle(topNode).webkitTransform;
 
+        var translateX = 0;
         var match = transform.match(/matrix\(1, 0, 0, 1, (.*),[\s\S]*/);
         if (match) {
             translateX = match[1];
         }
-        topNode.classList.add('paused');
+
+        // 手百下添加 -webkit-animation-play-state: paused 无效~~~
+        // topNode.classList.add('paused');
+
         topNode.classList.remove('swing');
+
+        topNode.style.marginLeft = (translateX - MARGIN_LEFT) + 'px';
+        topNode.style.transform = 'translateY(23px)';
+        topNode.style.webkitTransform = 'translateY(23px)';
+
+        topNode.classList.remove('first');
+
+        offsetTop = parseInt(topNode.style.top) + 23;
+        create(offsetTop - BASE_SWING_DISTANCE);
 
         // console.warn(topNode.style.transform);
         // console.warn(topNode.style.webkitTransform);
         // console.warn(window.getComputedStyle(topNode).transform);
-        topNode.style.transform = 'translate3d(' + translateX + 'px, 26px, 0)';
-        topNode.style.webkitTransform = 'translate3d(' + translateX + 'px, 26px, 0)';
+        // topNode.style.transform = 'translate3d(' + translateX + 'px, 26px, 0)';
+        // topNode.style.webkitTransform = 'translate3d(' + translateX + 'px, 26px, 0)';
         // topNode.classList.remove('paused');
-        topNode.classList.add('dropdown');
+        // topNode.classList.add('dropdown');
     }
 
     var exports = {};
 
     exports.init = function () {
         startNode.addEventListener(globalData.touchStartEvent, startGame);
-        offsetTop = document.querySelector('.first').offsetTop;
+        offsetTop = document.querySelector('.branch-item').offsetTop;
+        console.warn(offsetTop);
 
         document.body.addEventListener(globalData.touchStartEvent, dropBranch);
         console.warn(globalData);
