@@ -1,0 +1,135 @@
+
+// 动画属性名
+.ani-name(@name: none, ...) {
+    @names: ~`"@{arguments}".replace(/[\[\]]/g, "")`;
+    -webkit-animation-name: @names;
+       -moz-animation-name: @names;
+        -ms-animation-name: @names;
+         -o-animation-name: @names;
+            animation-name: @names;
+}
+
+// 动画持续的时间，正数，单位可以是秒(s)或者毫秒(ms)。默认值为0，表明动画不执行。
+.ani-duration(@duration: 0s, ...) {
+    @durations: ~`"@{arguments}".replace(/[\[\]]/g, "")`;
+    -webkit-animation-duration: @durations;
+       -moz-animation-duration: @durations;
+        -ms-animation-duration: @durations;
+         -o-animation-duration: @durations;
+            animation-duration: @durations;
+}
+
+// 指定对象动画的持续时间
+// ease: 缓解效果，等同于 cubic-bezier(0.25,0.1,0.25,1.0) 函数，既立方贝塞尔。
+// linear: 线性效果，等同于 cubic-bezier(0.0,0.0,1.0,1.0) 函数。
+// ease-in: 渐显效果，等同于 cubic-bezier(0.42,0,1.0,1.0) 函数。
+// ease-out: 渐隐效果，等同于 cubic-bezier(0,0,0.58,1.0) 函数。
+// ease-in-out: 渐显渐隐效果，等同于 cubic-bezier(0.42,0,0.58,1.0) 函数。
+// step-start: 马上转跳到动画结束状态。
+// step-end: 保持动画开始状态，直到动画执行时间结束，马上转跳到动画结束状态。
+// steps(<number>[, [ start | end ] ]?): 第一个参数 number 为指定的间隔数，即把动画分为 n 步阶段性展示，
+//      第二个参数默认为 end，设置最后一步的状态，start 为结束时的状态，end 为开始时的状态，
+//      若设置与 animation-fill-mode 的效果冲突，而以 animation-fill-mode 的设置为动画结束的状态。
+// cubic-bezier(<number>, <number>, <number>, <number>): 特殊的立方贝塞尔曲线效果。
+.ani-timing-function(@timing-function: ease, ...) {
+    @timing-functions: ~`"@{arguments}".replace(/[\[\]]/g, "")`;
+    -webkit-animation-timing-function: @timing-functions;
+       -moz-animation-timing-function: @timing-functions;
+        -ms-animation-timing-function: @timing-functions;
+         -o-animation-timing-function: @timing-functions;
+            animation-timing-function: @timing-functions;
+}
+
+// 设置动画延迟执行的时间。默认值 0 表示立即执行，正数为动画延迟一定时间，负数为截断一定时间内的动画。单位为秒 (s) 或毫秒 (s)。
+.ani-delay(@delay: 0s, ...) {
+    @delays: ~`"@{arguments}".replace(/[\[\]]/g, "")`;
+    -webkit-animation-delay: @delays;
+       -moz-animation-delay: @delays;
+        -ms-animation-delay: @delays;
+         -o-animation-delay: @delays;
+            animation-delay: @delays;
+}
+
+// 指定对象动画循环播放的次数。number: 自定义动画执行次数，设置值可为 0 或正整数。infinite: 无限循环。
+.ani-iteration-count(@count: infinite, ...) {
+    @counts: ~`"@{arguments}".replace(/[\[\]]/g, "")`;
+    -webkit-animation-iteration-count: @counts;
+       -moz-animation-iteration-count: @counts;
+        -ms-animation-iteration-count: @counts;
+         -o-animation-iteration-count: @counts;
+            animation-iteration-count: @counts;
+}
+
+// 检索或设置对象动画循环播放次数大于 1 次时，动画是否反向运动。
+// normal: 正常方向。
+// reverse: 动画反向运行，方向始终与 normal 相反。（FF14.0.1以下不支持）
+// alternate: 动画会循环正反方向交替运动，奇数次 (1, 3, 5) 会正常运动，偶数次 (2, 4, 6) 会反向运动，即所有相关联的值都会反向。
+// alternate-reverse: 动画从反向开始，再正反方向交替运动，运动方向始终与 alternate 定义的相反。(FF14.0.1 以下不支持)
+.ani-direction(@direction: normal, ...) {
+    @directions: ~`"@{arguments}".replace(/[\[\]]/g, "")`;
+    -webkit-animation-direction: @directions;
+       -moz-animation-direction: @directions;
+        -ms-animation-direction: @directions;
+         -o-animation-direction: @directions;
+            animation-direction: @directions;
+}
+
+// 检索或设置对象动画时间之外的状态
+// none: 默认值。不设置对象动画之外的状态
+// forwards: 结束后保持动画结束时的状态，但当 animation-direction 为 0，则动画不执行，持续保持动画开始时的状态
+// backwards: 结束后返回动画开始时的状态
+// both: 结束后可遵循 forwards 和 backwards 两个规则。
+.ani-fill-mode(@mode: none, ...) {
+    @modes: ~`"@{arguments}".replace(/[\[\]]/g, "")`;
+    -webkit-animation-fill-mode: @modes;
+       -moz-animation-fill-mode: @modes;
+        -ms-animation-fill-mode: @modes;
+         -o-animation-fill-mode: @modes;
+            animation-fill-mode: @modes;
+}
+
+// 检索或设置对象动画的状态。running: 默认值，运动；paused: 暂停
+.ani-play-state(@state: paused, ...) {
+    @states: ~`"@{arguments}".replace(/[\[\]]/g, "")`;
+    -webkit-animation-play-state: @states;
+       -moz-animation-play-state: @states;
+        -ms-animation-play-state: @states;
+         -o-animation-play-state: @states;
+            animation-play-state: @states;
+}
+
+.trans-property(@property: none, ...) {
+    @propertys: ~`"@{arguments}".replace(/[\[\]]/g, "")`;
+    -webkit-transition-property: @propertys;
+       -moz-transition-property: @propertys;
+        -ms-transition-property: @propertys;
+         -o-transition-property: @propertys;
+            transition-property: @propertys;
+}
+
+.trans-duration(@duration: 0s, ...) {
+    @durations: ~`"@{arguments}".replace(/[\[\]]/g, "")`;
+    -webkit-transition-duration: @durations;
+       -moz-transition-duration: @durations;
+        -ms-transition-duration: @durations;
+         -o-transition-duration: @durations;
+            transition-duration: @durations;
+}
+
+.trans-timing-function(@timing-function: ease, ...) {
+    @timing-functions: ~`"@{arguments}".replace(/[\[\]]/g, "")`;
+    -webkit-transition-timing-function: @timing-functions;
+       -moz-transition-timing-function: @timing-functions;
+        -ms-transition-timing-function: @timing-functions;
+         -o-transition-timing-function: @timing-functions;
+            transition-timing-function: @timing-functions;
+}
+
+.trans-delay(@delay: 0s, ...) {
+    @delays: ~`"@{arguments}".replace(/[\[\]]/g, "")`;
+    -webkit-transition-delay: @delays;
+       -moz-transition-delay: @delays;
+        -ms-transition-delay: @delays;
+         -o-transition-delay: @delays;
+            transition-delay: @delays;
+}
