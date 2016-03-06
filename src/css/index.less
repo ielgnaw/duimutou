@@ -118,6 +118,22 @@ html {
     height: 100%;
     position: relative;
 
+    .break-branch {
+        position: absolute;
+        height: 20px;
+        left: 50%;
+        opacity: .75;
+
+        &.down {
+            .ani-name(break);
+            .ani-duration(.5s);
+            .ani-timing-function(linear);
+            .ani-iteration-count(1);
+            // .ani-fill-mode(backwards);
+            // .ani-direction(alternate);
+        }
+    }
+
     .branch-item {
         position: absolute;
         width: 270px;
@@ -126,19 +142,21 @@ html {
         left: 50%;
         margin-left: -135px;
 
-        &.swing {
-            .ani-name(swing);
-            .ani-duration(.5s);
-            .ani-timing-function(linear);
-            .ani-iteration-count(infinite);
-            .ani-fill-mode(forwards);
-            .ani-direction(alternate);
-        }
+        // &.swing {
+        //     .ani-name(swing);
+        //     .ani-duration(1s);
+        //     .ani-timing-function(linear);
+        //     .ani-iteration-count(infinite);
+        //     .ani-fill-mode(forwards);
+        //     .ani-direction(alternate);
+        // }
 
         &.first {
             z-index: 20;
-            -webkit-transform: translate3d(0, 0, 0);
-                    transform: translate3d(0, 0, 0);
+            // -webkit-transform: translate3d(0, 0, 0);
+                    // transform: translate3d(0, 0, 0);
+            -webkit-transform: translate3d(-40px, 0, 0);
+                    transform: translate3d(-40px, 0, 0);
         }
 
         .branch-middle {

@@ -43,7 +43,7 @@ define(function (require) {
     }
 
     var TPL = ''
-        + '<div class="branch-item swing first" style="top: ${top}px; z-index: ${zIndex};">'
+        + '<div class="branch-item swing first" data-clsrandom="${clsRandom}" style="top: ${top}px; z-index: ${zIndex};">'
         +   '<div class="branch-left branch-left${clsRandom}"></div>'
         +   '<div class="branch-middle branch-middle${clsRandom}"></div>'
         +   '<div class="branch-right branch-right${clsRandom}"></div>'

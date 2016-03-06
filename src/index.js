@@ -23,11 +23,32 @@ define(function (require) {
     var offsetTop = 0;
 
     /**
-     * 木头落下后，前一根和后一根木头垂直偏移距离的差值
+     * .branch-left 的宽度
      *
      * @type {number}
      */
-    var BASE_DROPED_DISTANCE = 12;
+    var branchLeftWidth = 10;
+
+    /**
+     * .branch-middle 的宽度
+     *
+     * @type {number}
+     */
+    var branchMiddleWidth = 260;
+
+    /**
+     * .branch-right 的 margin-left
+     *
+     * @type {number}
+     */
+    var branchMarginLeft = 260;
+
+    /**
+     * 每根左右摇摆的木头下落的距离
+     *
+     * @type {number}
+     */
+    var BASE_DROPED_DISTANCE = 23;
 
     /**
      * 木头左右摇摆时和下面已经落下的最上面那根木头的距离
@@ -56,6 +77,57 @@ define(function (require) {
     }
 
     /**
+     * 落下时破碎的的小木头动画结束的回调函数
+     *
+     * @param {Object} e 事件对象
+     */
+    function breakBranchAniEnd(e) {
+        var target = e.target || e.srcElement;
+        target.parentNode.removeChild(target);
+    }
+
+    /**
+     * 木头落下时，破碎的小木头的动画
+     *
+     * @param {HTML Element} 当前坐落的这个大木头
+     * @param {number} marginLeft 小木头的左偏移
+     * @param {number} width 小木头的宽度
+     * @param {string} direction 方向，是出现左边的小木头还是右边的
+     */
+    function createBreakBranch(topNode, marginLeft, width, direction) {
+        var div = document.createElement('div');
+        div.className = 'break-branch down';
+        div.style.marginLeft = marginLeft + 'px';
+        div.style.width = width + 'px';
+
+        var html = '';
+        if (direction === 'left') {
+            html = ''
+                + '<div class="branch-left branch-left1"></div>'
+                + '<div class="branch-middle branch-middle1" style="width: '
+                +   width
+                + 'px;"></div>';
+        }
+        else {
+            html = ''
+                + '<div class="branch-middle branch-middle1" style="width: '
+                +   width
+                + 'px;"></div>'
+                + '<div class="branch-right branch-right1" style="margin-left: '
+                +   width
+                + 'px"></div>';
+        }
+
+        div.innerHTML = html;
+
+        // mozAnimationEnd oAnimationEnd oanimationend animationend
+        div.addEventListener('webkitAnimationEnd', breakBranchAniEnd);
+        div.addEventListener('animationend', breakBranchAniEnd);
+
+        topNode.appendChild(div);
+    }
+
+    /**
      * 点击屏幕放下木头
      *
      * @param {Object} e 事件对象
@@ -79,13 +151,15 @@ define(function (require) {
 
         topNode.classList.remove('swing');
 
-        topNode.style.marginLeft = (translateX - MARGIN_LEFT) + 'px';
+        var marginLeftOffset = (translateX - MARGIN_LEFT);
+
+        topNode.style.marginLeft = marginLeftOffset + 'px';
         topNode.style.transform = 'translateY(23px)';
         topNode.style.webkitTransform = 'translateY(23px)';
 
         topNode.classList.remove('first');
 
-        offsetTop = parseInt(topNode.style.top) + 23;
+        offsetTop = parseInt(topNode.style.top) + BASE_DROPED_DISTANCE;
         create(offsetTop - BASE_SWING_DISTANCE);
 
         // console.warn(topNode.style.transform);
@@ -95,17 +169,68 @@ define(function (require) {
         // topNode.style.webkitTransform = 'translate3d(' + translateX + 'px, 26px, 0)';
         // topNode.classList.remove('paused');
         // topNode.classList.add('dropdown');
+        // debugger
+        var direction = 'left';
+        var width = -MARGIN_LEFT - marginLeftOffset;
+        // topNode.style.marginLeft = -MARGIN_LEFT + 'px';
+        topNode.style.marginLeft = -MARGIN_LEFT + width + 'px';
+        if (marginLeftOffset > -MARGIN_LEFT) {
+            direction = 'right';
+            width = marginLeftOffset - (-MARGIN_LEFT);
+            // 260 是 branch-middle 的宽度，减去 10 是因为没有 branch-left，而 branch-left 的宽度是 10
+            marginLeftOffset = branchMiddleWidth / 2 - branchLeftWidth / 2 - width;
+            topNode.style.marginLeft = -MARGIN_LEFT + width + 'px';
+        }
+        else {
+            MARGIN_LEFT = -parseInt(topNode.style.marginLeft, 10);
+        }
+
+        // console.warn(width);
+        console.warn(topNode);
+
+
+        console.warn(MARGIN_LEFT);
+
+        // console.warn(topNode.childNodes);
+        // console.warn(document.querySelector('.branch-middle', topNode));
+
+        createBreakBranch(topNode, marginLeftOffset, width, direction);
+
+        var childNodes = topNode.childNodes;
+        var length = childNodes.length;
+        var i = -1;
+        while (++ i < length) {
+            var node = childNodes[i];
+            if (direction === 'left') {
+                if (node.classList.contains('branch-middle')) {
+                    node.style.width = branchMiddleWidth - width + 'px';
+                }
+
+                if (node.classList.contains('branch-right')) {
+                    node.style.marginLeft = branchMarginLeft - width + 'px';
+                }
+            }
+            else {
+                if (node.classList.contains('branch-middle')) {
+                    node.style.width = branchMiddleWidth - width + 'px';
+                }
+
+                if (node.classList.contains('branch-right')) {
+                    node.style.marginLeft = branchMarginLeft - width + 'px';
+                }
+            }
+        }
     }
 
     var exports = {};
 
     exports.init = function () {
         startNode.addEventListener(globalData.touchStartEvent, startGame);
-        offsetTop = document.querySelector('.branch-item').offsetTop;
-        console.warn(offsetTop);
 
         document.body.addEventListener(globalData.touchStartEvent, dropBranch);
-        console.warn(globalData);
+
+        offsetTop = document.querySelector('.branch-item').offsetTop;
+
         create(offsetTop - BASE_SWING_DISTANCE);
     };
 

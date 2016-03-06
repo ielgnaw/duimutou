@@ -30,3 +30,41 @@
                 transform: translateX(-30px) translateZ(0);
     }
 }
+
+/**
+ * 截断的木头落下
+ */
+@-webkit-keyframes 'break' {
+    0% {
+        opacity: .75;
+        -webkit-transform: translate3d(0, 0, 0);
+                transform: translate3d(0, 0, 0);
+    }
+    50% {
+        opacity: .45;
+        -webkit-transform: translate3d(0, 9px, 0);
+                transform: translate3d(0, 9px, 0);
+    }
+    100% {
+        opacity: 0;
+        -webkit-transform: translate3d(0, 17px, 0);
+                transform: translate3d(0, 17px, 0);
+    }
+}
+@keyframes 'break' {
+    0% {
+        opacity: .75;
+        -webkit-transform: translate3d(0, 0, 0);
+                transform: translate3d(0, 0, 0);
+    }
+    50% {
+        opacity: .45;
+        -webkit-transform: translate3d(0, 9px, 0);
+                transform: translate3d(0, 9px, 0);
+    }
+    100% {
+        opacity: 0;
+        -webkit-transform: translate3d(0, 17px, 0);
+                transform: translate3d(0, 17px, 0);
+    }
+}
