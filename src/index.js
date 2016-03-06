@@ -170,21 +170,38 @@ define(function (require) {
         // 截取的小木头碎片的宽度
         var width = 0;
         if (marginLeftOffset > (-MARGIN_LEFT)) {
-            width = abs(marginLeftOffset - (-MARGIN_LEFT));// + abs(translateX);
+            width = abs(marginLeftOffset - (-MARGIN_LEFT));
         }
         else {
-            width = abs((-MARGIN_LEFT) - marginLeftOffset);// + abs(translateX);
+            width = abs((-MARGIN_LEFT) - marginLeftOffset);
         }
 
         branchMiddleWidth = branchMiddleWidth - width;
 
         create(offsetTop - BASE_SWING_DISTANCE, branchMiddleWidth);
 
-        function createBreakBranch1(topNode, width, direction) {
+        topNodeStyle.marginLeft = marginLeftOffset + width + 'px';
+
+        var childNodes = topNode.childNodes;
+        var length = childNodes.length;
+        var i = -1;
+        while (++ i < length) {
+            var node = childNodes[i];
+            if (node.classList.contains('branch-middle')) {
+                node.style.width = branchMiddleWidth + 'px';
+            }
+
+            if (node.classList.contains('branch-right')) {
+                node.style.marginLeft = branchMiddleWidth + 'px';
+            }
+        }
+
+        function createBreakBranch1(topNode, width, top, direction) {
             var div = document.createElement('div');
             div.className = 'break-branch down';
-            div.style.marginLeft = -MARGIN_LEFT + 'px';
+            div.style.marginLeft = -MARGIN_LEFT - width + 'px';
             div.style.width = width + 'px';
+            div.style.top = top + 'px';
             direction = direction || 'left';
             var html = '';
             if (direction === 'left') {
@@ -204,10 +221,10 @@ define(function (require) {
                     + 'px"></div>';
             }
             div.innerHTML = html;
-            topNode.appendChild(div);
+            topNode.parentNode.appendChild(div);
         }
 
-        createBreakBranch1(topNode, width);
+        createBreakBranch1(topNode, width, parseInt(topNodeStyle.top, 10) + 23);
 
 
         // var direction = 'left';
