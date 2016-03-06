@@ -43,19 +43,22 @@ define(function (require) {
     }
 
     var TPL = ''
-        + '<div class="branch-item swing first" data-clsrandom="${clsRandom}" style="top: ${top}px; z-index: ${zIndex};">'
+        + '<div class="branch-item swing first" data-clsrandom="${clsRandom}" style="'
+        +   'width: ${width}px;top: ${top}px; z-index: ${zIndex};">'
         +   '<div class="branch-left branch-left${clsRandom}"></div>'
-        +   '<div class="branch-middle branch-middle${clsRandom}"></div>'
-        +   '<div class="branch-right branch-right${clsRandom}"></div>'
+        +   '<div class="branch-middle branch-middle${clsRandom}" style="width: ${width}px;"></div>'
+        +   '<div class="branch-right branch-right${clsRandom}" style="margin-left: ${marginLeft}px;"></div>'
         + '</div>';
 
     var container = document.querySelector('.branch-container');
 
-    return function (top) {
+    return function (top, width) {
         var div = document.createElement('div');
         var clsRandom = randomInt(1, 4);
         div.innerHTML = TPL.replace('${top}', top)
             .replace('${zIndex}', zIndexQueen.pick())
+            .replace('${marginLeft}', width)
+            .replace(/\$\{width\}/g, width)
             .replace(/\$\{clsRandom\}/g, clsRandom);
         container.appendChild(div.childNodes[0]);
     };

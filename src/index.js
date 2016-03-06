@@ -10,6 +10,7 @@ define(function (require) {
     var create = require('./create');
 
     var doc = document;
+    var abs = Math.abs;
 
     var guideNode = doc.querySelector('.guide-tip');
     var startNode = doc.querySelector('.start');
@@ -62,7 +63,19 @@ define(function (require) {
      *
      * @type {number}
      */
-    var MARGIN_LEFT = 0;
+    var MARGIN_LEFT = 135;
+
+    /**
+     * 游戏开始回调函数
+     *
+     * @param {Object} e 事件对象
+     */
+    function startGame(e) {
+        e.stopPropagation();
+        e.preventDefault();
+        guideNode.style.display = 'none';
+        gameNode.style.display = 'block';
+    }
 
     /**
      * 落下时破碎的的小木头动画结束的回调函数
@@ -109,18 +122,11 @@ define(function (require) {
         div.innerHTML = html;
 
         // mozAnimationEnd oAnimationEnd oanimationend animationend
-        div.addEventListener('webkitAnimationEnd', breakBranchAniEnd);
-        div.addEventListener('animationend', breakBranchAniEnd);
+        // div.addEventListener('webkitAnimationEnd', breakBranchAniEnd);
+        // div.addEventListener('animationend', breakBranchAniEnd);
 
         topNode.appendChild(div);
     }
-
-    /**
-     * 默认时的 translateX，即完整木头居中时的 translateX
-     *
-     * @type {number}
-     */
-    var defaultTranslateX = -135;
 
     /**
      * 点击屏幕放下木头
@@ -134,10 +140,11 @@ define(function (require) {
         var topNode = document.querySelector('.first');
 
         var transform = window.getComputedStyle(topNode).transform || window.getComputedStyle(topNode).webkitTransform;
+
         var translateX = 0;
         var match = transform.match(/matrix\(1, 0, 0, 1, (.*),[\s\S]*/);
         if (match) {
-            translateX = parseInt(match[1], 10);
+            translateX = match[1];
         }
 
         // 手百下添加 -webkit-animation-play-state: paused 无效~~~
@@ -145,45 +152,92 @@ define(function (require) {
 
         topNode.classList.remove('swing');
 
-        console.warn(translateX);
+        // 木头落下的左偏移，如果小于 -135，那么就截断左边的，否则截断右边的
+        // 因为 margin-left: 135px 是居中的值，所以用 -135 来计算
+        // 截取的那个小碎木头的宽度就是 -135 和 marginLeftOffset 的差值的绝对值
+        var marginLeftOffset = (translateX - MARGIN_LEFT) | 0;
 
-        // var marginLeftOffset = (translateX - defaultTranslateX);
-        // console.warn(marginLeftOffset);
+        var topNodeStyle = topNode.style;
 
-        // topNode.style.marginLeft = marginLeftOffset + 'px';
-        topNode.style.transform = 'translateX(' + translateX +'px) translateY(23px)';
-        topNode.style.webkitTransform = 'translateX(' + translateX +'px) translateY(23px)';
+        topNodeStyle.marginLeft = marginLeftOffset + 'px';
+        topNodeStyle.transform = 'translateY(23px)';
+        topNodeStyle.webkitTransform = 'translateY(23px)';
 
         topNode.classList.remove('first');
 
-        offsetTop = parseInt(topNode.style.top) + BASE_DROPED_DISTANCE;
-        create(offsetTop - BASE_SWING_DISTANCE);
+        offsetTop = parseInt(topNodeStyle.top) + BASE_DROPED_DISTANCE;
 
-        // console.warn(topNode.style.transform);
-        // console.warn(topNode.style.webkitTransform);
-        // console.warn(window.getComputedStyle(topNode).transform);
-        // topNode.style.transform = 'translate3d(' + translateX + 'px, 26px, 0)';
-        // topNode.style.webkitTransform = 'translate3d(' + translateX + 'px, 26px, 0)';
-        // topNode.classList.remove('paused');
-        // topNode.classList.add('dropdown');
-        // debugger
+        // 截取的小木头碎片的宽度
+        var width = 0;
+        if (marginLeftOffset > (-MARGIN_LEFT)) {
+            width = abs(marginLeftOffset - (-MARGIN_LEFT));// + abs(translateX);
+        }
+        else {
+            width = abs((-MARGIN_LEFT) - marginLeftOffset);// + abs(translateX);
+        }
+
+        branchMiddleWidth = branchMiddleWidth - width;
+
+        create(offsetTop - BASE_SWING_DISTANCE, branchMiddleWidth);
+
+        function createBreakBranch1(topNode, width, direction) {
+            var div = document.createElement('div');
+            div.className = 'break-branch down';
+            div.style.marginLeft = -MARGIN_LEFT + 'px';
+            div.style.width = width + 'px';
+            direction = direction || 'left';
+            var html = '';
+            if (direction === 'left') {
+                html = ''
+                    + '<div class="branch-left branch-left1"></div>'
+                    + '<div class="branch-middle branch-middle1" style="width: '
+                    +   width
+                    + 'px;"></div>';
+            }
+            else {
+                html = ''
+                    + '<div class="branch-middle branch-middle1" style="width: '
+                    +   width
+                    + 'px;"></div>'
+                    + '<div class="branch-right branch-right1" style="margin-left: '
+                    +   width
+                    + 'px"></div>';
+            }
+            div.innerHTML = html;
+            topNode.appendChild(div);
+        }
+
+        createBreakBranch1(topNode, width);
+
+
         // var direction = 'left';
         // var width = -MARGIN_LEFT - marginLeftOffset;
 
-        // topNode.style.marginLeft = -MARGIN_LEFT + 'px';
-        // // topNode.style.marginLeft = -MARGIN_LEFT + width + 'px';
+        // topNodeStyle.marginLeft = -MARGIN_LEFT + 'px';
+        // // topNodeStyle.marginLeft = -MARGIN_LEFT + width + 'px';
         // if (marginLeftOffset > -MARGIN_LEFT) {
         //     direction = 'right';
         //     width = marginLeftOffset - (-MARGIN_LEFT);
         //     // 260 是 branch-middle 的宽度，减去 10 是因为没有 branch-left，而 branch-left 的宽度是 10
         //     marginLeftOffset = branchMiddleWidth / 2 - branchLeftWidth / 2 - width;
-        //     topNode.style.marginLeft = -MARGIN_LEFT + width + 'px';
+        //     topNodeStyle.marginLeft = -MARGIN_LEFT + width + 'px';
         // }
         // else {
-        //     MARGIN_LEFT = -parseInt(topNode.style.marginLeft, 10);
+        //     MARGIN_LEFT = -parseInt(topNodeStyle.marginLeft, 10);
         // }
 
+        // // console.warn(width);
+        // // console.warn(topNode);
+        // // console.warn(topNodeStyle.marginLeft);
+
+
+        // // console.warn(MARGIN_LEFT);
+
+        // // console.warn(topNode.childNodes);
+        // // console.warn(document.querySelector('.branch-middle', topNode));
+        // // console.warn(marginLeftOffset, width);
         // createBreakBranch(topNode, marginLeftOffset, width, direction);
+        // create(offsetTop - BASE_SWING_DISTANCE, branchMiddleWidth - width);
 
         // var childNodes = topNode.childNodes;
         // var length = childNodes.length;
@@ -211,18 +265,6 @@ define(function (require) {
         // }
     }
 
-    /**
-     * 游戏开始回调函数
-     *
-     * @param {Object} e 事件对象
-     */
-    function startGame(e) {
-        e.stopPropagation();
-        e.preventDefault();
-        guideNode.style.display = 'none';
-        gameNode.style.display = 'block';
-    }
-
     var exports = {};
 
     exports.init = function () {
@@ -232,7 +274,7 @@ define(function (require) {
 
         offsetTop = document.querySelector('.branch-item').offsetTop;
 
-        create(offsetTop - BASE_SWING_DISTANCE);
+        create(offsetTop - BASE_SWING_DISTANCE, branchMiddleWidth);
     };
 
     return exports;
