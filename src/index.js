@@ -8,6 +8,7 @@
 define(function (require) {
 
     var create = require('./create');
+    var config = require('./config');
 
     var doc = document;
     var abs = Math.abs;
@@ -17,53 +18,35 @@ define(function (require) {
     var gameNode = doc.querySelector('.game-content');
 
     /**
-     * 落下的木头中最上方的那个木头的垂直偏移距离，作为下一个木头落下的基准
+     * 根据 keyframes name 找到对应的 keyframes
      *
-     * @type {number}
+     * @param {string} rule keyframes 名称
+     *
+     * @return {Object} keyframes 对象
      */
-    var offsetTop = 0;
+    function findKeyframesRule(rule) {
+        var ss = document.styleSheets;
+        for (var i = 0; i < ss.length; ++i) {
+            for (var j = 0; j < ss[i].cssRules.length; ++j) {
+                if (ss[i].cssRules[j].type == window.CSSRule.WEBKIT_KEYFRAMES_RULE
+                    && ss[i].cssRules[j].name == rule
+                ) {
+                    return ss[i].cssRules[j];
+                }
+            }
+        }
+        return null;
+    }
 
     /**
-     * .branch-left 的宽度
+     * 落下时破碎的的小木头动画结束的回调函数
      *
-     * @type {number}
+     * @param {Object} e 事件对象
      */
-    var branchLeftWidth = 10;
-
-    /**
-     * .branch-middle 的宽度
-     *
-     * @type {number}
-     */
-    var branchMiddleWidth = 260;
-
-    /**
-     * .branch-right 的 margin-left
-     *
-     * @type {number}
-     */
-    var branchMarginLeft = 260;
-
-    /**
-     * 每根左右摇摆的木头下落的距离
-     *
-     * @type {number}
-     */
-    var BASE_DROPED_DISTANCE = 23;
-
-    /**
-     * 木头左右摇摆时和下面已经落下的最上面那根木头的距离
-     *
-     * @type {number}
-     */
-    var BASE_SWING_DISTANCE = 40;
-
-    /**
-     * .branch-item 的默认 margin-left
-     *
-     * @type {number}
-     */
-    var MARGIN_LEFT = 135;
+    function breakBranchAniEnd(e) {
+        var target = e.target || e.srcElement;
+        target.parentNode.removeChild(target);
+    }
 
     /**
      * 游戏开始回调函数
@@ -78,57 +61,6 @@ define(function (require) {
     }
 
     /**
-     * 落下时破碎的的小木头动画结束的回调函数
-     *
-     * @param {Object} e 事件对象
-     */
-    function breakBranchAniEnd(e) {
-        var target = e.target || e.srcElement;
-        target.parentNode.removeChild(target);
-    }
-
-    /**
-     * 木头落下时，破碎的小木头的动画
-     *
-     * @param {HTML Element} 当前坐落的这个大木头
-     * @param {number} marginLeft 小木头的左偏移
-     * @param {number} width 小木头的宽度
-     * @param {string} direction 方向，是出现左边的小木头还是右边的
-     */
-    function createBreakBranch(topNode, marginLeft, width, direction) {
-        var div = document.createElement('div');
-        div.className = 'break-branch down';
-        div.style.marginLeft = marginLeft + 'px';
-        div.style.width = width + 'px';
-
-        var html = '';
-        if (direction === 'left') {
-            html = ''
-                + '<div class="branch-left branch-left1"></div>'
-                + '<div class="branch-middle branch-middle1" style="width: '
-                +   width
-                + 'px;"></div>';
-        }
-        else {
-            html = ''
-                + '<div class="branch-middle branch-middle1" style="width: '
-                +   width
-                + 'px;"></div>'
-                + '<div class="branch-right branch-right1" style="margin-left: '
-                +   width
-                + 'px"></div>';
-        }
-
-        div.innerHTML = html;
-
-        // mozAnimationEnd oAnimationEnd oanimationend animationend
-        // div.addEventListener('webkitAnimationEnd', breakBranchAniEnd);
-        // div.addEventListener('animationend', breakBranchAniEnd);
-
-        topNode.appendChild(div);
-    }
-
-    /**
      * 点击屏幕放下木头
      *
      * @param {Object} e 事件对象
@@ -137,153 +69,169 @@ define(function (require) {
         e.stopPropagation();
         e.preventDefault();
 
-        var topNode = document.querySelector('.first');
+        // 当前左右摇摆的那个木头
+        var currentNode = document.querySelector('.current');
 
-        var transform = window.getComputedStyle(topNode).transform || window.getComputedStyle(topNode).webkitTransform;
+        var transform = window.getComputedStyle(currentNode).transform || window.getComputedStyle(currentNode).webkitTransform;
 
         var translateX = 0;
         var match = transform.match(/matrix\(1, 0, 0, 1, (.*),[\s\S]*/);
         if (match) {
-            translateX = match[1];
+            translateX = match[1] | 0;
         }
 
         // 手百下添加 -webkit-animation-play-state: paused 无效~~~
-        // topNode.classList.add('paused');
+        // currentNode.classList.add('paused');
 
-        topNode.classList.remove('swing');
+        currentNode.classList.remove('swing');
 
         // 木头落下的左偏移，如果小于 -135，那么就截断左边的，否则截断右边的
         // 因为 margin-left: 135px 是居中的值，所以用 -135 来计算
         // 截取的那个小碎木头的宽度就是 -135 和 marginLeftOffset 的差值的绝对值
-        var marginLeftOffset = (translateX - MARGIN_LEFT) | 0;
-
-        var topNodeStyle = topNode.style;
-
-        topNodeStyle.marginLeft = marginLeftOffset + 'px';
-        topNodeStyle.transform = 'translateY(23px)';
-        topNodeStyle.webkitTransform = 'translateY(23px)';
-
-        topNode.classList.remove('first');
-
-        offsetTop = parseInt(topNodeStyle.top) + BASE_DROPED_DISTANCE;
-
-        // 截取的小木头碎片的宽度
-        var width = 0;
-        if (marginLeftOffset > (-MARGIN_LEFT)) {
-            width = abs(marginLeftOffset - (-MARGIN_LEFT));
+        var marginLeftOffset = (translateX + config.centerMarginLeft) | 0;
+        if (translateX > 0) {
+            rightCut(currentNode, marginLeftOffset, translateX);
         }
         else {
-            width = abs((-MARGIN_LEFT) - marginLeftOffset);
+            leftCut(currentNode, marginLeftOffset, translateX);
         }
+    }
 
-        branchMiddleWidth = branchMiddleWidth - width;
+    // var test = 50;
 
-        create(offsetTop - BASE_SWING_DISTANCE, branchMiddleWidth);
+    function leftCut(currentNode, marginLeftOffset, translateX) {
+        currentNode.classList.remove('current');
+        var currentNodeStyle = currentNode.style;
+        // console.warn(currentNode, marginLeftOffset, translateX);
+        // currentNodeStyle.marginLeft = marginLeftOffset + 'px';
+        currentNodeStyle.transform = 'translateY(23px)';
+        currentNodeStyle.webkitTransform = 'translateY(23px)';
 
-        topNodeStyle.marginLeft = marginLeftOffset + width + 'px';
+        // 截取的小木头碎片的宽度
+        var width = abs(config.centerMarginLeft - marginLeftOffset);
+        console.warn('截取的小木头碎片的宽度', width);
+        currentNodeStyle.width = config.branchMiddleWidth - width + 10 + 'px';
 
-        var childNodes = topNode.childNodes;
+        var childNodes = currentNode.childNodes;
         var length = childNodes.length;
         var i = -1;
         while (++ i < length) {
             var node = childNodes[i];
             if (node.classList.contains('branch-middle')) {
-                node.style.width = branchMiddleWidth + 'px';
+                node.style.width = config.branchMiddleWidth - width + 'px';
             }
 
             if (node.classList.contains('branch-right')) {
-                node.style.marginLeft = branchMiddleWidth + 'px';
+                node.style.marginLeft = config.branchMiddleWidth - width + 'px';
             }
         }
 
-        function createBreakBranch1(topNode, width, top, direction) {
-            var div = document.createElement('div');
-            div.className = 'break-branch down';
-            div.style.marginLeft = -MARGIN_LEFT - width + 'px';
-            div.style.width = width + 'px';
-            div.style.top = top + 'px';
-            direction = direction || 'left';
-            var html = '';
-            if (direction === 'left') {
-                html = ''
-                    + '<div class="branch-left branch-left1"></div>'
-                    + '<div class="branch-middle branch-middle1" style="width: '
-                    +   width
-                    + 'px;"></div>';
+        // 要创建的破碎的木头的 top 值
+        var breakBranchTop = offsetTop = parseInt(currentNodeStyle.top) + config.dropDistance;
+        var breakBranchNode = document.createElement('div');
+        breakBranchNode.className = 'break-branch down';
+        breakBranchNode.style.marginLeft = marginLeftOffset + 'px';
+        breakBranchNode.style.width = width + 'px';
+        breakBranchNode.style.top = breakBranchTop + 'px';
+        breakBranchNode.innerHTML = ''
+                + '<div class="branch-left branch-left1"></div>'
+                + '<div class="branch-middle branch-middle1" style="width: '
+                +   width
+                + 'px;"></div>';
+
+        breakBranchNode.addEventListener('webkitAnimationEnd', breakBranchAniEnd);
+        breakBranchNode.addEventListener('animationend', breakBranchAniEnd);
+        currentNode.parentNode.appendChild(breakBranchNode);
+
+        config.branchMiddleWidth = config.branchMiddleWidth - width;
+        create(offsetTop - config.swingBranchTop, config.branchMiddleWidth);
+    }
+
+    function rightCut(currentNode, marginLeftOffset, translateX) {
+        currentNode.classList.remove('current');
+        var currentNodeStyle = currentNode.style;
+        // console.warn(marginLeftOffset, translateX);
+        // currentNodeStyle.marginLeft = marginLeftOffset + 'px';
+        currentNodeStyle.transform = 'translateY(23px)';
+        currentNodeStyle.webkitTransform = 'translateY(23px)';
+
+        // 截取的小木头碎片的宽度
+        // translateX 就是 小木头的宽度？？？
+        var width = abs(config.centerMarginLeft - marginLeftOffset);
+        console.warn('截取的小木头碎片的宽度', width);
+        currentNodeStyle.width = config.branchMiddleWidth - width + 10 + 'px';
+        currentNodeStyle.marginLeft = config.centerMarginLeft + width + 'px';
+
+        var childNodes = currentNode.childNodes;
+        var length = childNodes.length;
+        var i = -1;
+        while (++ i < length) {
+            var node = childNodes[i];
+            if (node.classList.contains('branch-middle')) {
+                node.style.width = config.branchMiddleWidth - width + 'px';
             }
-            else {
-                html = ''
-                    + '<div class="branch-middle branch-middle1" style="width: '
-                    +   width
-                    + 'px;"></div>'
-                    + '<div class="branch-right branch-right1" style="margin-left: '
-                    +   width
-                    + 'px"></div>';
+
+            if (node.classList.contains('branch-right')) {
+                node.style.marginLeft = config.branchMiddleWidth - width + 'px';
             }
-            div.innerHTML = html;
-            topNode.parentNode.appendChild(div);
         }
+        // debugger
+        // 要创建的破碎的木头的 top 值
+        var breakBranchTop = offsetTop = parseInt(currentNodeStyle.top) + config.dropDistance;
+        var breakBranchNode = document.createElement('div');
+        breakBranchNode.className = 'break-branch down';
+        breakBranchNode.style.marginLeft = marginLeftOffset + config.branchMiddleWidth - width + 'px';
+        breakBranchNode.style.width = width + 'px';
+        breakBranchNode.style.top = breakBranchTop + 'px';
+        breakBranchNode.innerHTML = ''
+                + '<div class="branch-middle branch-middle1" style="width: '
+                +   width
+                + 'px;"></div>'
+                + '<div class="branch-right branch-right1" style="margin-left: '
+                +   width
+                + 'px"></div>';
 
-        createBreakBranch1(topNode, width, parseInt(topNodeStyle.top, 10) + 23);
+        breakBranchNode.addEventListener('webkitAnimationEnd', breakBranchAniEnd);
+        breakBranchNode.addEventListener('animationend', breakBranchAniEnd);
+        currentNode.parentNode.appendChild(breakBranchNode);
 
+        // var nextBranchMarginLeft = -(config.branchMiddleWidth - width + 10 + config.centerMarginLeft);
+        var nextBranchMarginLeft = -(config.branchMiddleWidth - width + 10 + config.centerMarginLeft);
 
-        // var direction = 'left';
-        // var width = -MARGIN_LEFT - marginLeftOffset;
+        config.branchMiddleWidth = config.branchMiddleWidth - width;
+        create(offsetTop - config.swingBranchTop, config.branchMiddleWidth, nextBranchMarginLeft);
 
-        // topNodeStyle.marginLeft = -MARGIN_LEFT + 'px';
-        // // topNodeStyle.marginLeft = -MARGIN_LEFT + width + 'px';
-        // if (marginLeftOffset > -MARGIN_LEFT) {
-        //     direction = 'right';
-        //     width = marginLeftOffset - (-MARGIN_LEFT);
-        //     // 260 是 branch-middle 的宽度，减去 10 是因为没有 branch-left，而 branch-left 的宽度是 10
-        //     marginLeftOffset = branchMiddleWidth / 2 - branchLeftWidth / 2 - width;
-        //     topNodeStyle.marginLeft = -MARGIN_LEFT + width + 'px';
-        // }
-        // else {
-        //     MARGIN_LEFT = -parseInt(topNodeStyle.marginLeft, 10);
-        // }
+        // 应该是多层 dom 嵌套来做，外层保证 -135 的居中以及 translateX(50px) 的移动，是透明的！
+        // 内层是显示的东西
 
-        // // console.warn(width);
-        // // console.warn(topNode);
-        // // console.warn(topNodeStyle.marginLeft);
+        // test = abs(nextBranchMarginLeft) + test;
 
+        // console.warn(abs(nextBranchMarginLeft));
 
-        // // console.warn(MARGIN_LEFT);
-
-        // // console.warn(topNode.childNodes);
-        // // console.warn(document.querySelector('.branch-middle', topNode));
-        // // console.warn(marginLeftOffset, width);
-        // createBreakBranch(topNode, marginLeftOffset, width, direction);
-        // create(offsetTop - BASE_SWING_DISTANCE, branchMiddleWidth - width);
-
-        // var childNodes = topNode.childNodes;
-        // var length = childNodes.length;
-        // var i = -1;
-        // while (++ i < length) {
-        //     var node = childNodes[i];
-        //     if (direction === 'left') {
-        //         if (node.classList.contains('branch-middle')) {
-        //             node.style.width = branchMiddleWidth - width + 'px';
-        //         }
-
-        //         if (node.classList.contains('branch-right')) {
-        //             node.style.marginLeft = branchMarginLeft - width + 'px';
-        //         }
-        //     }
-        //     else {
-        //         if (node.classList.contains('branch-middle')) {
-        //             node.style.width = branchMiddleWidth - width + 'px';
-        //         }
-
-        //         if (node.classList.contains('branch-right')) {
-        //             node.style.marginLeft = branchMarginLeft - width + 'px';
-        //         }
+        // for (var i = 0; i < document.styleSheets[0]['cssRules'].length; i += 1) {
+        //     var rule = document.styleSheets[0]['cssRules'][i];
+        //     // console.warn(rule.name);
+        //     if (rule.name === 'swing') {
+        //         // rule.cssText = 1;
+        //         console.warn(rule);
         //     }
         // }
+
+        // findKeyframesRule('swing').deleteRule('0%');
+        // findKeyframesRule('swing').deleteRule('100%');
+        // findKeyframesRule('swing').appendRule(''
+        //     + '0% {-webkit-transform: translateX(' + test + 'px) translateZ(0);transform: translateX(' + test + 'px) translateZ(0);}'
+        // );
+        // findKeyframesRule('swing').appendRule(''
+        //     + '100% {-webkit-transform: translateX(' + -test + 'px) translateZ(0);transform: translateX(' + -test + 'px) translateZ(0);}'
+        // )
     }
 
     var exports = {};
 
+    /**
+     * 初始化
+     */
     exports.init = function () {
         startNode.addEventListener(globalData.touchStartEvent, startGame);
 
@@ -291,7 +239,7 @@ define(function (require) {
 
         offsetTop = document.querySelector('.branch-item').offsetTop;
 
-        create(offsetTop - BASE_SWING_DISTANCE, branchMiddleWidth);
+        create(offsetTop - config.swingBranchTop, config.branchMiddleWidth);
     };
 
     return exports;

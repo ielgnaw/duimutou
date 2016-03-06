@@ -43,8 +43,8 @@ define(function (require) {
     }
 
     var TPL = ''
-        + '<div class="branch-item swing first" data-clsrandom="${clsRandom}" style="'
-        +   'width: ${width}px;top: ${top}px; z-index: ${zIndex};">'
+        + '<div class="branch-item swing current" data-clsrandom="${clsRandom}" style="'
+        +   'width: ${width1}px;top: ${top}px; z-index: ${zIndex}; margin-left: ${marginLeft1}px;">'
         +   '<div class="branch-left branch-left${clsRandom}"></div>'
         +   '<div class="branch-middle branch-middle${clsRandom}" style="width: ${width}px;"></div>'
         +   '<div class="branch-right branch-right${clsRandom}" style="margin-left: ${marginLeft}px;"></div>'
@@ -52,13 +52,15 @@ define(function (require) {
 
     var container = document.querySelector('.branch-container');
 
-    return function (top, width) {
+    return function (top, width, marginLeft) {
         var div = document.createElement('div');
         var clsRandom = randomInt(1, 4);
         div.innerHTML = TPL.replace('${top}', top)
             .replace('${zIndex}', zIndexQueen.pick())
+            .replace('${marginLeft1}', marginLeft || -135)
             .replace('${marginLeft}', width)
             .replace(/\$\{width\}/g, width)
+            .replace(/\$\{width1\}/g, width + 10)
             .replace(/\$\{clsRandom\}/g, clsRandom);
         container.appendChild(div.childNodes[0]);
     };
