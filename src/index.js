@@ -201,13 +201,6 @@ define(function (require) {
         config.branchMiddleWidth = config.branchMiddleWidth - width;
         create(offsetTop - config.swingBranchTop, config.branchMiddleWidth, nextBranchMarginLeft);
 
-        // 应该是多层 dom 嵌套来做，外层保证 -135 的居中以及 translateX(50px) 的移动，是透明的！
-        // 内层是显示的东西
-
-        // test = abs(nextBranchMarginLeft) + test;
-
-        // console.warn(abs(nextBranchMarginLeft));
-
         // for (var i = 0; i < document.styleSheets[0]['cssRules'].length; i += 1) {
         //     var rule = document.styleSheets[0]['cssRules'][i];
         //     // console.warn(rule.name);
