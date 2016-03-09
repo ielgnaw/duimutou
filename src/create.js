@@ -5,6 +5,8 @@
 
 define(function (require) {
 
+    var util = require('./util');
+
     function ZIndexQueen() {
         this.items = [15, 20];
         // 当前索引
@@ -30,39 +32,58 @@ define(function (require) {
 
     var zIndexQueen = new ZIndexQueen();
 
-    /**
-     * 生成 min 到 max 范围内的随机整数
-     *
-     * @param {number} min 最小值
-     * @param {number} max 最大值
-     *
-     * @return {number} min 到 max 之间的随机整数
-     */
-    function randomInt(min, max) {
-        return Math.floor(Math.random() * (max - min + 1) + min);
-    }
-
-    var TPL = ''
-        + '<div class="branch-item swing current" data-clsrandom="${clsRandom}" style="'
-        +   'width: ${width1}px;top: ${top}px; z-index: ${zIndex}; margin-left: ${marginLeft1}px;">'
-        +   '<div class="branch-left branch-left${clsRandom}"></div>'
-        +   '<div class="branch-middle branch-middle${clsRandom}" style="width: ${width}px;"></div>'
-        +   '<div class="branch-right branch-right${clsRandom}" style="margin-left: ${marginLeft}px;"></div>'
-        + '</div>';
-
     var container = document.querySelector('.branch-container');
 
-    return function (top, width, marginLeft) {
+    var TPL = ''
+        + '<div class="branch-item swing current" data-clsrandom="{{clsRandom}}" style="'
+        +   'width: {{itemWidth}}px;top: {{top}}px; z-index: {{zIndex}}; '
+        +   '-webkit-transform: translateX({{translateX}}px) translateZ(0); '
+        +   'transform: translateX({{translateX}}px) translateZ(0);">'
+        +   '<div class="branch-left branch-left{{clsRandom}}"></div>'
+        +   '<div class="branch-middle branch-middle{{clsRandom}}" style="width: {{middleWidth}}px;"></div>'
+        +   '<div class="branch-right branch-right{{clsRandom}}" style="margin-left: {{middleWidth}}px;"></div>'
+        + '</div>';
+
+    return function (opts) {
         var div = document.createElement('div');
-        var clsRandom = randomInt(1, 4);
-        div.innerHTML = TPL.replace('${top}', top)
-            .replace('${zIndex}', zIndexQueen.pick())
-            .replace('${marginLeft1}', marginLeft || -135)
-            .replace('${marginLeft}', width)
-            .replace(/\$\{width\}/g, width)
-            .replace(/\$\{width1\}/g, width + 10)
-            .replace(/\$\{clsRandom\}/g, clsRandom);
+        var clsRandom = util.randomInt(1, 4);
+        div.innerHTML = util.render(TPL, {
+            clsRandom: clsRandom,
+            itemWidth: opts.itemWidth,
+            top: opts.top,
+            zIndex: zIndexQueen.pick(),
+            middleWidth: opts.middleWidth,
+            translateX: opts.translateX
+        });
+
         container.appendChild(div.childNodes[0]);
     };
+
+    // var TPL = ''
+    //     + '<div class="branch-item swing current" data-clsrandom="${clsRandom}" style="'
+    //     +   'width: ${width1}px;top: ${top}px; z-index: ${zIndex}; margin-left: ${marginLeft1}px;">'
+    //     +   '<div class="branch-left branch-left${clsRandom}"></div>'
+    //     +   '<div class="branch-middle branch-middle${clsRandom}" style="width: ${width}px;"></div>'
+    //     +   '<div class="branch-right branch-right${clsRandom}" style="margin-left: ${marginLeft}px;"></div>'
+    //     + '</div>';
+
+    // var container = document.querySelector('.branch-container');
+
+    // return function (top, width, marginLeft) {
+    //     var div = document.createElement('div');
+    //     var clsRandom = util.randomInt(1, 4);
+    //     var ml = marginLeft;
+    //     if (marginLeft === void 0) {
+    //         ml = -135;
+    //     }
+    //     div.innerHTML = TPL.replace('${top}', top)
+    //         .replace('${zIndex}', zIndexQueen.pick())
+    //         .replace('${marginLeft1}', ml)
+    //         .replace('${marginLeft}', width)
+    //         .replace(/\$\{width\}/g, width)
+    //         .replace(/\$\{width1\}/g, width + 10)
+    //         .replace(/\$\{clsRandom\}/g, clsRandom);
+    //     container.appendChild(div.childNodes[0]);
+    // };
 
 });

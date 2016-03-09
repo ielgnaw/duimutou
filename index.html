@@ -47,6 +47,39 @@
         </section>
     </div>
     <script>
+        // http://paulirish.com/2011/requestanimationframe-for-smart-animating/
+        // http://my.opera.com/emoller/blog/2011/12/20/requestanimationframe-for-smart-er-animating
+
+        // requestAnimationFrame polyfill by Erik Möller
+        // fixes from Paul Irish and Tino Zijdel
+        (function () {
+            var lastTime = 0;
+            var vendors = ['ms', 'moz', 'webkit', 'o'];
+            for (var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
+                window.requestAnimationFrame = window[vendors[x] + 'RequestAnimationFrame'];
+                window.cancelAnimationFrame
+                    = window[vendors[x] + 'CancelAnimationFrame'] || window[vendors[x] + 'CancelRequestAnimationFrame'];
+            }
+
+            if (!window.requestAnimationFrame) {
+                window.requestAnimationFrame = function (callback, element) {
+                    var currTime = new Date().getTime();
+                    var timeToCall = Math.max(0, 16 - (currTime - lastTime));
+                    var id = setTimeout(function () {
+                        callback(currTime + timeToCall);
+                    }, timeToCall);
+                    lastTime = currTime + timeToCall;
+                    return id;
+                };
+            }
+
+            if (!window.cancelAnimationFrame) {
+                window.cancelAnimationFrame = function (id) {
+                    clearTimeout(id);
+                };
+            }
+        })();
+
         var globalData = (function () {
             var width = document.documentElement.clientWidth;
             var height = document.documentElement.clientHeight;
@@ -55,6 +88,23 @@
             section.style.width = width + 'px';
             section.style.height = height + 'px';
 
+            function transitionEndEvent() {
+                var t;
+                var el = document.createElement('fakeelement');
+                var transitions = {
+                  'transition':'transitionend',
+                  'OTransition':'oTransitionEnd',
+                  'MozTransition':'transitionend',
+                  'WebkitTransition':'webkitTransitionEnd'
+                }
+
+                for (t in transitions) {
+                    if (el.style[t] !== undefined) {
+                        return transitions[t];
+                    }
+                }
+            }
+
             var supportTouch = ('ontouchstart' in window) || window.DocumentTouch && document instanceof window.DocumentTouch;
 
             return {
@@ -62,7 +112,8 @@
                 height: height,
                 touchStartEvent: (supportTouch ? 'touchstart' : 'mousedown'),
                 touchMoveEvent: (supportTouch ? 'touchmove' : 'mousemove'),
-                touchEndEvent: (supportTouch ? 'touchend' : 'mouseup')
+                touchEndEvent: (supportTouch ? 'touchend' : 'mouseup'),
+                transitionEndEvent: transitionEndEvent()
             }
         })();
 

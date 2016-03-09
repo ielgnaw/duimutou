@@ -16,7 +16,10 @@ define(function (require) {
         dropDistance: 23,
 
         // 居中时的 margin-left 值
-        centerMarginLeft: -135
+        centerMarginLeft: -135,
+
+        // 左右摇摆的距离
+        swingDistance: 130
     };
 
     return exports;
