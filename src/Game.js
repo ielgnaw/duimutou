@@ -9,10 +9,6 @@ define(function (require) {
     var Event = require('./Event');
 
     function Game() {
-        this.isStart = false;
-        this.isStop = true;
-        this.isPause = true;
-        this.isResume = false;
         this.sprites = [];
         this.timer = null;
     }

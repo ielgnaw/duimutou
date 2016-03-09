@@ -7,6 +7,7 @@ define(function (require) {
 
     var util = require('./util');
     var Event = require('./Event');
+    var config = require('./config');
 
     /**
      * zIndex 的队列类，用于交替设置 z-index
@@ -34,7 +35,8 @@ define(function (require) {
 
     var container = document.querySelector('.branch-container');
     var TPL = ''
-        + '<div class="branch-item swing current" data-clsrandom="{{clsRandom}}" style="'
+        // + '<div class="branch-item swing current" data-clsrandom="{{clsRandom}}" style="'
+        + '<div class="branch-item current" data-clsrandom="{{clsRandom}}" style="'
         +   'width: {{itemWidth}}px;top: {{top}}px; z-index: {{zIndex}}; '
         +   '-webkit-transform: translateX({{translateX}}px) translateZ(0); '
         +   'transform: translateX({{translateX}}px) translateZ(0);">'
@@ -51,6 +53,7 @@ define(function (require) {
      * 木头类
      */
     function Branch(opts) {
+        this.name = opts.name || util.getTimestamp();
         this.x = opts.x || 0;
         this.y = opts.y || 0;
         this.vx = opts.vx || 0;
@@ -59,7 +62,9 @@ define(function (require) {
         this.accumulateTime = null;
         this.itemWidth = opts.itemWidth || 0;
         this.middleWidth = opts.middleWidth || 0;
+        this.top = opts.top || 0;
         this.status = 1;
+        this.breakBranchWidth = opts.breakBranchWidth || 0;
 
         this._create();
 
@@ -73,7 +78,7 @@ define(function (require) {
 
     var p = Branch.prototype;
 
-    p._create = function (opts) {
+    p._create = function () {
         var div = document.createElement('div');
         var clsRandom = util.randomInt(1, 4);
         div.innerHTML = util.render(TPL, {
@@ -81,7 +86,7 @@ define(function (require) {
             itemWidth: this.itemWidth,
             middleWidth: this.middleWidth,
             translateX: this.x,
-            top: this.y,
+            top: this.top,
             zIndex: zIndexQueen.pick()
         });
 
@@ -111,14 +116,37 @@ define(function (require) {
         this.x += this.vx;
         this.y += this.vy;
 
-        if ((this.x > globalData.width - 275) || (this.x <= 0)) {
+        if ((this.x > globalData.width - this.itemWidth + this.breakBranchWidth) || (this.x <= 0)) {
             this.vx = -this.vx;
+        }
+
+        if (this.y >= config.dropDistance) {
+            this.vy = 0;
         }
     };
 
     p.draw = function () {
-        this.domStyle.transform = 'translateX(' + this.x + 'px) translateY(0) translateZ(0)';
-        this.domStyle.webkitTransform = 'translateX(' + this.x + 'px) translateY(0) translateZ(0)';
+        this.domStyle.webkitTransform =
+        this.domStyle.transform = 'translateX(' + this.x + 'px) translateY(' + this.y + 'px) translateZ(0)';
+    };
+
+    p.changeStyle = function (width) {
+        this.domStyle.width = config.branchMiddleWidth - width + 10 + 'px';
+        var childNodes = this.dom.childNodes;
+        var length = childNodes.length;
+        var i = -1;
+        while (++ i < length) {
+            var node = childNodes[i];
+            if (node.classList.contains('branch-middle')) {
+                node.style.width = config.branchMiddleWidth - width + 'px';
+            }
+
+            if (node.classList.contains('branch-right')) {
+                node.style.marginLeft = config.branchMiddleWidth - width + 'px';
+            }
+        }
+        this.dom.classList.remove('current');
+        this.domStyle.left = 0;
     };
 
     util.inherits(Branch, Event);
