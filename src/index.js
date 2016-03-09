@@ -32,94 +32,25 @@ define(function (require) {
     }
 
     /**
-     * 落下时破碎的的小木头动画结束的回调函数
-     *
-     * @param {Object} e 事件对象
-     */
-    function breakBranchAniEnd(e) {
-        var target = e.target || e.srcElement;
-        target.parentNode.removeChild(target);
-    }
-
-    function rightCut(width) {
-        // var breakBranchTop = offsetTop = parseInt(currentNodeStyle.top) + config.dropDistance;
-        var breakBranchNode = document.createElement('div');
-        breakBranchNode.className = 'break-branch down';
-        breakBranchNode.style.marginLeft = branch.x + branch.middleWidth - width + 'px';
-        breakBranchNode.style.width = width + 'px';
-        breakBranchNode.style.top = branch.top + config.dropDistance + 'px';
-        breakBranchNode.innerHTML = ''
-                + '<div class="branch-middle branch-middle1" style="width: '
-                +   width
-                + 'px;"></div>'
-                + '<div class="branch-right branch-right1" style="margin-left: '
-                +   width
-                + 'px"></div>';
-
-        breakBranchNode.addEventListener('webkitAnimationEnd', breakBranchAniEnd);
-        breakBranchNode.addEventListener('animationend', breakBranchAniEnd);
-        containerNode.appendChild(breakBranchNode);
-
-        branch.changeStyle(width);
-        console.warn(width);
-
-        config.branchMiddleWidth -= width;
-        // debugger
-        branch = new Branch({
-            // x: globalData.width - 270 + width,
-            x: 0,
-            breakBranchWidth: width,
-            vx: 1,
-            top: branch.top + config.dropDistance - config.swingBranchTop,
-            itemWidth: config.branchMiddleWidth + 10,
-            middleWidth: config.branchMiddleWidth,
-        });
-        game.addSprite(branch);
-        console.warn(game);
-    }
-
-    var w = 0;
-
-    /**
-     * 点击屏幕放下木头
+     * 点击屏幕落下木头
      *
      * @param {Object} e 事件对象
      */
     function dropBranch(e) {
         e.stopPropagation();
         e.preventDefault();
-        branch.vy = 3;
-        branch.vx = 0;
-        // 截取的小木头的宽度
-        var width = 0;
-        w += width / 2;
-        if (branch.x > 70 + w) {
-            // (globalData.width - branch.itemWidth) / 2 - (globalData.width - (branch.x + branch.itemWidth));
-            // width = branch.x  - (globalData.width - branch.itemWidth) / 2;
-            // width = branch.x + branch.itemWidth / 2 - globalData.width / 2;
-            width = branch.itemWidth - (globalData.width / 2 - branch.x) - 270 / 2;
-            rightCut(width);
-        }
-        else if (branch.x < 70 + w) {
-            // (globalData.width - branch.itemWidth) / 2 - branch.x;
-            width = (globalData.width - branch.itemWidth) / 2 - branch.x;
-            console.warn('zuo');
-        }
-        else {
-            console.warn('niubi');
-        }
-        w += width;
     }
 
     /**
-     * 落下的木头中最上方的那个木头的垂直偏移距离，作为下一个木头落下的基准
-     *
-     * @type {number}
+     * 摇摆的木头对象
      */
-    var offsetTop = 0;
-
     var branch;
 
+    /**
+     * Game 实例
+     *
+     * @type {Object}
+     */
     var game = new Game();
 
     var exports = {};
@@ -129,18 +60,15 @@ define(function (require) {
      */
     exports.init = function () {
         startNode.addEventListener(globalData.touchStartEvent, startGame);
+        doc.body.addEventListener(globalData.touchStartEvent, dropBranch);
 
-        document.body.addEventListener(globalData.touchStartEvent, dropBranch);
-
-        offsetTop = document.querySelector('.branch-item').offsetTop;
-
+        var offsetTop = document.querySelector('.branch-item').offsetTop;
         branch = new Branch({
-            x: globalData.width - 270,
+            x: globalData.width - config.branchWidth,
             // x: 0,
+            y: offsetTop - config.swingBranchTop,
             vx: 1,
-            top: offsetTop - config.swingBranchTop,
-            itemWidth: config.branchMiddleWidth + 10,
-            middleWidth: config.branchMiddleWidth,
+            width: config.branchWidth
         });
 
         game.addSprite({
@@ -156,7 +84,7 @@ define(function (require) {
         });
         game.addSprite(branch);
 
-        game.render();
+        // game.render();
 
         // setTimeout(function () {
         //     game.removeSprite(branch)

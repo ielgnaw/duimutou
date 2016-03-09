@@ -35,7 +35,6 @@ define(function (require) {
 
     var container = document.querySelector('.branch-container');
     var TPL = ''
-        // + '<div class="branch-item swing current" data-clsrandom="{{clsRandom}}" style="'
         + '<div class="branch-item current" data-clsrandom="{{clsRandom}}" style="'
         +   'width: {{itemWidth}}px;top: {{top}}px; z-index: {{zIndex}}; '
         +   '-webkit-transform: translateX({{translateX}}px) translateZ(0); '
@@ -60,8 +59,9 @@ define(function (require) {
         this.vy = opts.vy || 0;
         this.then = null;
         this.accumulateTime = null;
-        this.itemWidth = opts.itemWidth || 0;
-        this.middleWidth = opts.middleWidth || 0;
+
+        this.width = opts.width || 0;
+        this.middleWidth = opts.middleWidth || (opts.width === 0 ? 0 : opts.width - 10);
         this.top = opts.top || 0;
         this.status = 1;
         this.breakBranchWidth = opts.breakBranchWidth || 0;
@@ -83,10 +83,10 @@ define(function (require) {
         var clsRandom = util.randomInt(1, 4);
         div.innerHTML = util.render(TPL, {
             clsRandom: clsRandom,
-            itemWidth: this.itemWidth,
+            itemWidth: this.width,
             middleWidth: this.middleWidth,
             translateX: this.x,
-            top: this.top,
+            top: this.y,
             zIndex: zIndexQueen.pick()
         });
 
@@ -116,7 +116,7 @@ define(function (require) {
         this.x += this.vx;
         this.y += this.vy;
 
-        if ((this.x > globalData.width - this.itemWidth + this.breakBranchWidth) || (this.x <= 0)) {
+        if ((this.x > globalData.width - this.width + this.breakBranchWidth) || (this.x <= 0)) {
             this.vx = -this.vx;
         }
 
