@@ -24,7 +24,7 @@ define(function (require) {
     var exports = {
         // 木头 .branch-item 的默认宽度，里面的 .branch-middle 的宽度是 branchWidth - 10
         // branchWidth: 270,
-        branchWidth: 200,
+        branchWidth: 150,
 
         // 木头左右摇摆时和下面已经落下木头中的最上面那根木头的距离
         swingBranchTop: 40
