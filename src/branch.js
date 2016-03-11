@@ -36,9 +36,9 @@ define(function (require) {
     var container = document.querySelector('.branch-container');
     var TPL = ''
         + '<div class="branch-item current" data-clsrandom="{{clsRandom}}" style="'
-        +   'width: {{itemWidth}}px;top: {{top}}px; z-index: {{zIndex}}; '
-        +   '-webkit-transform: translateX({{translateX}}px) translateZ(0); '
-        +   'transform: translateX({{translateX}}px) translateZ(0);">'
+        +   'width: {{itemWidth}}px; z-index: {{zIndex}}; '
+        +   '-webkit-transform: translateX({{translateX}}px) translateY({{top}}px) translateZ(0); '
+        +   'transform: translateX({{translateX}}px) translateY({{top}}px) translateZ(0);">'
         +   '<div class="branch-left branch-left{{clsRandom}}"></div>'
         +   '<div class="branch-middle branch-middle{{clsRandom}}" style="width: {{middleWidth}}px;"></div>'
         +   '<div class="branch-right branch-right{{clsRandom}}" style="margin-left: {{middleWidth}}px;"></div>'
@@ -62,9 +62,8 @@ define(function (require) {
 
         this.width = opts.width || 0;
         this.middleWidth = opts.middleWidth || (opts.width === 0 ? 0 : opts.width - 10);
-        this.top = opts.top || 0;
+        // this.top = opts.top || 0;
         this.status = 1;
-        this.breakBranchWidth = opts.breakBranchWidth || 0;
 
         this._create();
 
@@ -116,7 +115,7 @@ define(function (require) {
         this.x += this.vx;
         this.y += this.vy;
 
-        if ((this.x > globalData.width - this.width + this.breakBranchWidth) || (this.x <= 0)) {
+        if ((this.x > globalData.width - this.width) || (this.x <= 0)) {
             this.vx = -this.vx;
         }
 
@@ -131,22 +130,23 @@ define(function (require) {
     };
 
     p.changeStyle = function (width) {
-        this.domStyle.width = config.branchMiddleWidth - width + 10 + 'px';
+        this.domStyle.width = this.width - width + 'px';
         var childNodes = this.dom.childNodes;
         var length = childNodes.length;
         var i = -1;
         while (++ i < length) {
             var node = childNodes[i];
             if (node.classList.contains('branch-middle')) {
-                node.style.width = config.branchMiddleWidth - width + 'px';
+                node.style.width = this.width - width - 10 + 'px';
             }
 
             if (node.classList.contains('branch-right')) {
-                node.style.marginLeft = config.branchMiddleWidth - width + 'px';
+                node.style.marginLeft = this.width - width - 10 + 'px';
             }
         }
         this.dom.classList.remove('current');
         this.domStyle.left = 0;
+        this.domStyle.top = 0;
     };
 
     util.inherits(Branch, Event);

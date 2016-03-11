@@ -114,6 +114,9 @@ html {
     .ani-play-state(paused);
 }
 
+// @defaultWidth: 270px;
+@defaultWidth: 270px;
+
 .branch-container {
     height: 100%;
     position: relative;
@@ -123,6 +126,7 @@ html {
         height: 20px;
         // left: 50%;
         opacity: .75;
+        left: 0;
 
         &.down {
             .ani-name(break);
@@ -135,14 +139,15 @@ html {
     .branch-item {
         position: absolute;
         // width: 270px;
-        width: 150px;
+        width: @defaultWidth;
         height: 20px;
         top: 80%;
-        left: 50%;
+        // left: 50%;
+        left: 0;
 
         &.base {
-            -webkit-transform: translate3d(-50%, 0, 0);
-                    transform: translate3d(-50%, 0, 0);
+            // -webkit-transform: translate3d(-50%, 0, 0);
+                    // transform: translate3d(-50%, 0, 0);
         }
 
         // &.swing {
@@ -154,7 +159,8 @@ html {
 
         &.current {
             z-index: 20;
-            left: 0;
+            // left: 0;
+            top: 0;
             // -webkit-transform: translate3d(50px, 0, 0);
                     // transform: translate3d(50px, 0, 0);
             // -webkit-transform: translate3d(70px, 0, 0);
@@ -165,7 +171,7 @@ html {
     .branch-middle {
         position: absolute;
         // width: 260px;
-        width: 190px;
+        width: @defaultWidth - 10;
         height: 20px;
         margin-left: 5px;
         z-index: 1;
@@ -204,7 +210,7 @@ html {
 
     .branch-right {
         position: absolute;
-        margin-left: 260px;
+        margin-left: @defaultWidth - 10;
         width: 10px;
         height: 20px;
         z-index: 2;
