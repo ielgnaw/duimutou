@@ -43,25 +43,7 @@ define(function (require) {
 
     var curBranchWidth = config.defaultBranchWidth;
 
-    /**
-     * 点击屏幕落下木头
-     * 落下木头，并改变宽度
-     * 创建破碎的小木头，并添加小木头落下的动画
-     * 创建新的摇摆的木头
-     *
-     * @param {Object} e 事件对象
-     */
-    function dropBranch(e) {
-        e.stopPropagation();
-        e.preventDefault();
-
-        offsetTop = branch.y += config.dropDistance;
-
-        // 截取的小木头的宽度，如果是负值，说明要截取的小木头在左边
-        // var breakBranchWidth = branch.x - (globalData.width - config.defaultBranchWidth) / 2;
-        var breakBranchWidth = branch.x + curBranchWidth - 72 - config.defaultBranchWidth;
-        branch.changeStyle(breakBranchWidth);
-        console.warn(breakBranchWidth);
+    function rightCut(breakBranchWidth) {
         var breakBranchNode = document.createElement('div');
         breakBranchNode.className = 'break-branch down';
 
@@ -85,14 +67,43 @@ define(function (require) {
         branch.vx = 0;
 
         branch = new Branch({
-            // x: globalData.width - curBranchWidth,
-            x: 0,
+            x: globalData.width - curBranchWidth,
+            // x: 0,
             y: offsetTop - config.swingBranchTop,
             vx: 1,
             width: curBranchWidth
         });
 
         game.addSprite(branch);
+    }
+
+    /**
+     * 点击屏幕落下木头
+     * 落下木头，并改变宽度
+     * 创建破碎的小木头，并添加小木头落下的动画
+     * 创建新的摇摆的木头
+     *
+     * @param {Object} e 事件对象
+     */
+    function dropBranch(e) {
+        e.stopPropagation();
+        e.preventDefault();
+
+        offsetTop = branch.y += config.dropDistance;
+
+        // 截取的小木头的宽度，如果是负值，说明要截取的小木头在左边
+        // var breakBranchWidth = branch.x - (globalData.width - config.defaultBranchWidth) / 2;
+        var breakBranchWidth = 0;
+        if (breakBranchWidth > 0) {
+            breakBranchWidth = branch.x + curBranchWidth - 72 - config.defaultBranchWidth;
+            rightCut(breakBranchWidth);
+        }
+        else {
+            breakBranchWidth = branch.x + curBranchWidth - 72 - config.defaultBranchWidth;
+            rightCut(breakBranchWidth);
+            console.warn(213);
+        }
+        branch.changeStyle(breakBranchWidth);
     }
 
     /**
@@ -127,7 +138,8 @@ define(function (require) {
         var offsetTop = document.querySelector('.branch-item').offsetTop;
 
         branch = new Branch({
-            x: globalData.width - curBranchWidth,
+            // x: globalData.width - curBranchWidth,
+            x: 0,
             y: offsetTop - config.swingBranchTop,
             vx: 1,
             width: curBranchWidth
@@ -146,7 +158,7 @@ define(function (require) {
         });
         game.addSprite(branch);
 
-        game.render();
+        // game.render();
 
         // setTimeout(function () {
         //     game.removeSprite(branch)
