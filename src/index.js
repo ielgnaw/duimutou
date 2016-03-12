@@ -66,6 +66,9 @@ define(function (require) {
         curBranchWidth -= breakBranchWidth;
         branch.vx = 0;
 
+        // 这一句要在 new Branch 之前
+        branch.changeStyle(breakBranchWidth);
+
         branch = new Branch({
             x: globalData.width - curBranchWidth,
             // x: 0,
@@ -93,17 +96,16 @@ define(function (require) {
 
         // 截取的小木头的宽度，如果是负值，说明要截取的小木头在左边
         // var breakBranchWidth = branch.x - (globalData.width - config.defaultBranchWidth) / 2;
-        var breakBranchWidth = 0;
+        var breakBranchWidth = branch.x + curBranchWidth - 72 - config.defaultBranchWidth;
         if (breakBranchWidth > 0) {
-            breakBranchWidth = branch.x + curBranchWidth - 72 - config.defaultBranchWidth;
             rightCut(breakBranchWidth);
+        }
+        else if (breakBranchWidth < 0) {
+            console.warn('left');
         }
         else {
-            breakBranchWidth = branch.x + curBranchWidth - 72 - config.defaultBranchWidth;
-            rightCut(breakBranchWidth);
-            console.warn(213);
+            console.warn('niubi');
         }
-        branch.changeStyle(breakBranchWidth);
     }
 
     /**
@@ -138,8 +140,8 @@ define(function (require) {
         var offsetTop = document.querySelector('.branch-item').offsetTop;
 
         branch = new Branch({
-            // x: globalData.width - curBranchWidth,
-            x: 0,
+            x: globalData.width - curBranchWidth,
+            // x: 0,
             y: offsetTop - config.swingBranchTop,
             vx: 1,
             width: curBranchWidth
