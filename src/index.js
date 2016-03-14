@@ -43,43 +43,6 @@ define(function (require) {
 
     var curBranchWidth = config.defaultBranchWidth;
 
-    function rightCut(breakBranchWidth) {
-        var breakBranchNode = document.createElement('div');
-        breakBranchNode.className = 'break-branch down';
-
-        var breakBranchNodeStyle = breakBranchNode.style;
-        breakBranchNodeStyle.marginLeft = (curBranchWidth - breakBranchWidth - 10 + branch.x) + 'px';
-        breakBranchNodeStyle.width = breakBranchWidth + 'px';
-        breakBranchNodeStyle.top = branch.y + 'px';
-        breakBranchNode.innerHTML = ''
-                + '<div class="branch-middle branch-middle1" style="width: '
-                +   breakBranchWidth
-                + 'px;"></div>'
-                + '<div class="branch-right branch-right1" style="margin-left: '
-                +   breakBranchWidth
-                + 'px"></div>';
-
-        breakBranchNode.addEventListener('webkitAnimationEnd', breakBranchAniEnd);
-        breakBranchNode.addEventListener('animationend', breakBranchAniEnd);
-        containerNode.appendChild(breakBranchNode);
-
-        curBranchWidth -= breakBranchWidth;
-        branch.vx = 0;
-
-        // 这一句要在 new Branch 之前
-        branch.changeStyle(breakBranchWidth);
-
-        branch = new Branch({
-            x: globalData.width - curBranchWidth,
-            // x: 0,
-            y: offsetTop - config.swingBranchTop,
-            vx: 1,
-            width: curBranchWidth
-        });
-
-        game.addSprite(branch);
-    }
-
     function leftCut(breakBranchWidth) {
         var breakBranchNode = document.createElement('div');
         breakBranchNode.className = 'break-branch down';
@@ -109,7 +72,47 @@ define(function (require) {
 
         branch = new Branch({
             // x: globalData.width - curBranchWidth,
-            x: 0,
+            x: 30,
+            y: offsetTop - config.swingBranchTop,
+            vx: 1,
+            width: curBranchWidth
+        });
+
+        game.addSprite(branch);
+    }
+
+    function rightCut(breakBranchWidth) {
+        var breakBranchNode = document.createElement('div');
+        breakBranchNode.className = 'break-branch down';
+
+        var breakBranchNodeStyle = breakBranchNode.style;
+        breakBranchNodeStyle.marginLeft = (curBranchWidth - breakBranchWidth - 10 + branch.x) + 'px';
+        breakBranchNodeStyle.width = breakBranchWidth + 'px';
+        breakBranchNodeStyle.top = branch.y + 'px';
+        breakBranchNode.innerHTML = ''
+                + '<div class="branch-middle branch-middle1" style="width: '
+                +   breakBranchWidth
+                + 'px;"></div>'
+                + '<div class="branch-right branch-right1" style="margin-left: '
+                +   breakBranchWidth
+                + 'px"></div>';
+
+        breakBranchNode.addEventListener('webkitAnimationEnd', breakBranchAniEnd);
+        breakBranchNode.addEventListener('animationend', breakBranchAniEnd);
+        containerNode.appendChild(breakBranchNode);
+
+        curBranchWidth -= breakBranchWidth;
+        branch.vx = 0;
+
+        branch.dom.setAttribute('data-left', branch.x);
+        branch.dom.setAttribute('data-right', branch.x + curBranchWidth);
+
+        // 这一句要在 new Branch 之前
+        branch.changeStyle(breakBranchWidth);
+
+        branch = new Branch({
+            x: globalData.width - curBranchWidth,
+            // x: 0,
             y: offsetTop - config.swingBranchTop,
             vx: 1,
             width: curBranchWidth
@@ -143,7 +146,8 @@ define(function (require) {
         }
         // 右
         else if (breakBranchWidth < 0) {
-
+            breakBranchWidth = branch.x + curBranchWidth - (dataLeft + curBranchWidth);
+            rightCut(breakBranchWidth);
         }
         else {
             console.warn('niubi');
@@ -183,8 +187,8 @@ define(function (require) {
         var offsetTop = document.querySelector('.branch-item').offsetTop;
 
         branch = new Branch({
-            // x: globalData.width - curBranchWidth,
-            x: 30,
+            x: globalData.width - curBranchWidth,
+            // x: 30,
             y: offsetTop - config.swingBranchTop,
             vx: 1,
             width: curBranchWidth
