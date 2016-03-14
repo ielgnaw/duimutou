@@ -20,13 +20,15 @@ define(function (require) {
     var containerNode = doc.querySelector('.branch-container');
 
     /**
-     * 落下时破碎的的小木头动画结束的回调函数
+     * 左边落下破碎的小木头动画结束的回调函数
      *
      * @param {Object} e 事件对象
      */
     function breakBranchAniEnd(e) {
         var target = e.target || e.srcElement;
         target.parentNode.removeChild(target);
+
+        doc.body.addEventListener(globalData.touchStartEvent, dropBranch);
     }
 
     /**
@@ -43,6 +45,11 @@ define(function (require) {
 
     var curBranchWidth = config.defaultBranchWidth;
 
+    /**
+     * 在左侧的截断
+     *
+     * @param {number} breakBranchWidth 截断的小木头的宽度
+     */
     function leftCut(breakBranchWidth) {
         var breakBranchNode = document.createElement('div');
         breakBranchNode.className = 'break-branch down';
@@ -81,6 +88,11 @@ define(function (require) {
         game.addSprite(branch);
     }
 
+    /**
+     * 在右侧的截断
+     *
+     * @param {number} breakBranchWidth 截断的小木头的宽度
+     */
     function rightCut(breakBranchWidth) {
         var breakBranchNode = document.createElement('div');
         breakBranchNode.className = 'break-branch down';
@@ -114,7 +126,7 @@ define(function (require) {
             x: globalData.width - curBranchWidth,
             // x: 0,
             y: offsetTop - config.swingBranchTop,
-            vx: 1,
+            vx: 10,
             width: curBranchWidth
         });
 
@@ -132,6 +144,7 @@ define(function (require) {
     function dropBranch(e) {
         e.stopPropagation();
         e.preventDefault();
+        doc.body.removeEventListener(globalData.touchStartEvent, dropBranch);
 
         offsetTop = branch.y += config.dropDistance;
 
@@ -139,20 +152,30 @@ define(function (require) {
         var dataLeft = prevDom.getAttribute('data-left') | 0;
         var dataRight = dataLeft + curBranchWidth;
 
-        var breakBranchWidth = dataLeft - branch.x;
-        // 左
-        if (breakBranchWidth > 0) {
-            leftCut(breakBranchWidth);
+        // 挂逼了，右边
+        if (branch.x > dataRight) {
+            console.warn('右边，挂逼了。。。');
+            game.stop();
         }
-        // 右
-        else if (breakBranchWidth < 0) {
-            breakBranchWidth = branch.x + curBranchWidth - (dataLeft + curBranchWidth);
-            rightCut(breakBranchWidth);
+        else if (branch.x + branch.width < dataLeft) {
+            console.warn('左边，挂逼了。。。');
+            game.stop();
         }
         else {
-            console.warn('niubi');
+            var breakBranchWidth = dataLeft - branch.x;
+            // 左
+            if (breakBranchWidth > 0) {
+                leftCut(breakBranchWidth);
+            }
+            // 右
+            else if (breakBranchWidth < 0) {
+                breakBranchWidth = branch.x + curBranchWidth - (dataLeft + curBranchWidth);
+                rightCut(breakBranchWidth);
+            }
+            else {
+                console.warn('niubi');
+            }
         }
-
     }
 
     /**
@@ -187,8 +210,8 @@ define(function (require) {
         var offsetTop = document.querySelector('.branch-item').offsetTop;
 
         branch = new Branch({
-            x: globalData.width - curBranchWidth,
-            // x: 30,
+            // x: globalData.width - curBranchWidth,
+            x: 30,
             y: offsetTop - config.swingBranchTop,
             vx: 1,
             width: curBranchWidth
@@ -207,13 +230,11 @@ define(function (require) {
         });
         game.addSprite(branch);
 
-        // data-left:
-        // data-right: (data-left) + curBranchWidth
-
         game.render();
 
         // setTimeout(function () {
-        //     game.removeSprite(branch)
+        //     // game.removeSprite(branch)
+        //     game.stop();
         //     console.log(game);
         // }, 5000);
 

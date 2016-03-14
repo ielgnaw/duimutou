@@ -45,6 +45,10 @@ define(function (require) {
         sprite.fire('removeSprite', sprite);
     };
 
+    p.stop = function () {
+        window.cancelAnimationFrame(this.timer);
+    };
+
     util.inherits(Game, Event);
 
     return Game;
