@@ -127,6 +127,7 @@ define(function (require) {
     p.draw = function () {
         this.domStyle.webkitTransform =
         this.domStyle.transform = 'translateX(' + this.x + 'px) translateY(' + this.y + 'px) translateZ(0)';
+        // this.domStyle.left = this.x + 'px';
     };
 
     p.changeStyle = function (width) {

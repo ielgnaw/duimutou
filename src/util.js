@@ -13,6 +13,27 @@ define(function (require) {
 
     var exports = {};
 
+
+    /**
+     * 获取 dom 的前一个 node 节点
+     *
+     * @param {HTML Element} node 待获取前一个节点的节点
+     *
+     * @return {HTML Element} 前一个节点
+     */
+    exports.getPrev = function (node) {
+        var ret = node.previousSibling;
+        while (ret) {
+            if (ret.nodeType === 1) {
+                return ret;
+            }
+            ret = ret.previousSibling;
+            if (!ret) {
+                return null;
+            }
+        }
+    };
+
     /**
      * 最简单的模板
      *

@@ -80,6 +80,44 @@ define(function (require) {
         game.addSprite(branch);
     }
 
+    function leftCut(breakBranchWidth) {
+        var breakBranchNode = document.createElement('div');
+        breakBranchNode.className = 'break-branch down';
+
+        var breakBranchNodeStyle = breakBranchNode.style;
+        breakBranchNodeStyle.marginLeft = branch.x + 'px';
+        breakBranchNodeStyle.width = breakBranchWidth + 'px';
+        breakBranchNodeStyle.top = branch.y + 'px';
+        breakBranchNode.innerHTML = ''
+                + '<div class="branch-left branch-left1"></div>'
+                + '<div class="branch-middle branch-middle1" style="width: '
+                +   breakBranchWidth
+                + 'px;"></div>';
+
+        breakBranchNode.addEventListener('webkitAnimationEnd', breakBranchAniEnd);
+        breakBranchNode.addEventListener('animationend', breakBranchAniEnd);
+        containerNode.appendChild(breakBranchNode);
+
+        curBranchWidth -= breakBranchWidth;
+        branch.vx = 0;
+        branch.dom.style.marginLeft = breakBranchWidth + 'px';
+        branch.dom.setAttribute('data-left', branch.x + breakBranchWidth);
+        branch.dom.setAttribute('data-right', branch.x + breakBranchWidth + curBranchWidth);
+
+        // 这一句要在 new Branch 之前
+        branch.changeStyle(breakBranchWidth);
+
+        branch = new Branch({
+            // x: globalData.width - curBranchWidth,
+            x: 0,
+            y: offsetTop - config.swingBranchTop,
+            vx: 1,
+            width: curBranchWidth
+        });
+
+        game.addSprite(branch);
+    }
+
     /**
      * 点击屏幕落下木头
      * 落下木头，并改变宽度
@@ -94,18 +132,23 @@ define(function (require) {
 
         offsetTop = branch.y += config.dropDistance;
 
-        // 截取的小木头的宽度，如果是负值，说明要截取的小木头在左边
-        // var breakBranchWidth = branch.x - (globalData.width - config.defaultBranchWidth) / 2;
-        var breakBranchWidth = branch.x + curBranchWidth - 72 - config.defaultBranchWidth;
+        var prevDom = util.getPrev(branch.dom);
+        var dataLeft = prevDom.getAttribute('data-left') | 0;
+        var dataRight = dataLeft + curBranchWidth;
+
+        var breakBranchWidth = dataLeft - branch.x;
+        // 左
         if (breakBranchWidth > 0) {
-            rightCut(breakBranchWidth);
+            leftCut(breakBranchWidth);
         }
+        // 右
         else if (breakBranchWidth < 0) {
-            console.warn('left');
+
         }
         else {
             console.warn('niubi');
         }
+
     }
 
     /**
@@ -140,8 +183,8 @@ define(function (require) {
         var offsetTop = document.querySelector('.branch-item').offsetTop;
 
         branch = new Branch({
-            x: globalData.width - curBranchWidth,
-            // x: 0,
+            // x: globalData.width - curBranchWidth,
+            x: 30,
             y: offsetTop - config.swingBranchTop,
             vx: 1,
             width: curBranchWidth
@@ -160,7 +203,10 @@ define(function (require) {
         });
         game.addSprite(branch);
 
-        // game.render();
+        // data-left:
+        // data-right: (data-left) + curBranchWidth
+
+        game.render();
 
         // setTimeout(function () {
         //     game.removeSprite(branch)
