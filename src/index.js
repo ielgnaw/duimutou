@@ -197,11 +197,15 @@ define(function (require) {
      * 初始化
      */
     exports.init = function () {
-        document.querySelector('.base').style.webkitTransform = ''
-        document.querySelector('.base').style.transform = ''
+        var baseNode = document.querySelector('.base');
+        var baseNodeStyle = baseNode.style;
+        baseNodeStyle.webkitTransform = baseNodeStyle.transform = ''
             + 'translate3d('
             +   (globalData.width - curBranchWidth) / 2
             + 'px, 0, 0)';
+
+        baseNode.setAttribute('data-left', (globalData.width - curBranchWidth) / 2);
+        baseNode.setAttribute('data-right', (globalData.width - curBranchWidth) / 2 + curBranchWidth);
 
         startNode.addEventListener(globalData.touchStartEvent, startGame);
 
@@ -218,20 +222,21 @@ define(function (require) {
             width: curBranchWidth
         });
 
+        var fpsNode = document.querySelector('.fps');
+
         game.addSprite({
             count: 0,
             move: function () {
                 var fps = util.fps();
                 if (++this.count === 10) {
                     this.count = 0;
-                    document.querySelector('.left span').innerHTML = fps;
-                    // console.warn(fps);
+                    fpsNode.innerHTML = 'FPS: ' + fps;
                 }
             }
         });
         game.addSprite(branch);
 
-        game.render();
+        // game.render();
 
         // setTimeout(function () {
         //     // game.removeSprite(branch)
