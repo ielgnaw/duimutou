@@ -30,7 +30,11 @@ define(function (require) {
         dropDistance: 20,
 
         // 页面上最多有几根落下的木头，再多的话，层就要往下滑动了
-        maxBranchNum: 5
+        maxBranchNum: 15,
+
+        // 基础分数
+        baseScore: 10
+
     };
 
     return exports;

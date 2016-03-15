@@ -39,9 +39,8 @@ define(function (require) {
         this.fire('addSprite', sprite);
     };
 
-    p.removeSprite = function (sprite, callback) {
+    p.removeSprite = function (sprite) {
         sprite.status = -1;
-        sprite._after_remove = callback;
         sprite.fire('removeSprite', sprite);
     };
 

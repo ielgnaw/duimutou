@@ -40,6 +40,10 @@ html {
         float: left;
     }
 
+    span {
+        color: #fff;
+    }
+
     .middle {
         width: 40%;
     }
@@ -47,6 +51,20 @@ html {
     .left,
     .right {
         width: 30%;
+        span {
+            position: absolute;
+        }
+    }
+
+    .left {
+        span {
+            &.shake {
+                .ani-name(shake);
+                .ani-duration(.5s);
+                .ani-timing-function(linear);
+                .ani-iteration-count(1);
+            }
+        }
     }
 
     .fps {
@@ -54,13 +72,13 @@ html {
         position: absolute;
         height: 20px;
         line-height: 20px;
-        left: 20px;
+        left: 33px;
         top: 60px;
     }
 }
 
 .guide-tip {
-    display: none;
+    // display: none;
     position: absolute;
     text-align: center;
     color: #fff;
@@ -102,7 +120,7 @@ html {
     }
 
     .start {
-        margin-top: 30px;
+        margin-top: 60px;
         width: 114px;
         height: 54px;
         background-image: url(../img/ok.png);
@@ -117,7 +135,7 @@ html {
 
 .game-content {
     height: 100%;
-    // display: none;
+    display: none;
 }
 
 .paused {
@@ -173,25 +191,11 @@ html {
 
         &.base {
             top: 400px;
-            // -webkit-transform: translate3d(-50%, 0, 0);
-                    // transform: translate3d(-50%, 0, 0);
         }
-
-        // &.swing {
-        //     .trans-property(transform);
-        //     .trans-duration(1s);
-        //     .trans-timing-function(linear);
-        //     .trans-delay(0s);
-        // }
 
         &.current {
             z-index: 20;
-            // left: 0;
             top: 0;
-            // -webkit-transform: translate3d(50px, 0, 0);
-                    // transform: translate3d(50px, 0, 0);
-            // -webkit-transform: translate3d(70px, 0, 0);
-                    // transform: translate3d(70px, 0, 0);
         }
     }
 
@@ -203,16 +207,32 @@ html {
         margin-left: 5px;
         z-index: 1;
         &.branch-middle1 {
-            background-image: url(../img/branch-middle1.png);
+            // background-image: url(../img/branch-middle1.png);
+            background-image: url(../img/sprite.png);
+            background-position: -21px -8px;
+            background-size: 300px 120px;
+            background-repeat: no-repeat;
         }
         &.branch-middle2 {
-            background-image: url(../img/branch-middle2.png);
+            // background-image: url(../img/branch-middle2.png);
+            background-image: url(../img/sprite.png);
+            background-position: -21px -33px;
+            background-size: 300px 120px;
+            background-repeat: no-repeat;
         }
         &.branch-middle3 {
-            background-image: url(../img/branch-middle3.png);
+            // background-image: url(../img/branch-middle3.png);
+            background-image: url(../img/sprite.png);
+            background-position: -21px -59px;
+            background-size: 300px 120px;
+            background-repeat: no-repeat;
         }
         &.branch-middle4 {
-            background-image: url(../img/branch-middle4.png);
+            // background-image: url(../img/branch-middle4.png);
+            background-image: url(../img/sprite.png);
+            background-position: -21px -88px;
+            background-size: 300px 120px;
+            background-repeat: no-repeat;
         }
     }
 
@@ -222,16 +242,32 @@ html {
         height: 20px;
         z-index: 3;
         &.branch-left1 {
-            background-image: url(../img/branch-left1.png);
+            // background-image: url(../img/branch-left1.png);
+            background-image: url(../img/sprite.png);
+            background-position: 0 -9px;
+            background-size: 300px 120px;
+            background-repeat: no-repeat;
         }
         &.branch-left2 {
-            background-image: url(../img/branch-left2.png);
+            // background-image: url(../img/branch-left2.png);
+            background-image: url(../img/sprite.png);
+            background-position: -1px -33px;
+            background-size: 300px 120px;
+            background-repeat: no-repeat;
         }
         &.branch-left3 {
-            background-image: url(../img/branch-left3.png);
+            // background-image: url(../img/branch-left3.png);
+            background-image: url(../img/sprite.png);
+            background-position: -1px -60px;
+            background-size: 300px 120px;
+            background-repeat: no-repeat;
         }
         &.branch-left4 {
-            background-image: url(../img/branch-left4.png);
+            // background-image: url(../img/branch-left4.png);
+            background-image: url(../img/sprite.png);
+            background-position: -1px -88px;
+            background-size: 300px 120px;
+            background-repeat: no-repeat;
         }
     }
 
@@ -242,18 +278,83 @@ html {
         height: 20px;
         z-index: 2;
         &.branch-right1 {
-            background-image: url(../img/branch-right1.png);
+            // background-image: url(../img/branch-right1.png);
+            background-image: url(../img/sprite.png);
+            background-position: -287px -9px;
+            background-size: 300px 120px;
+            background-repeat: no-repeat;
         }
         &.branch-right2 {
-            background-image: url(../img/branch-right2.png);
+            // background-image: url(../img/branch-right2.png);
+            background-image: url(../img/sprite.png);
+            background-position: -287px -33px;
+            background-size: 300px 120px;
+            background-repeat: no-repeat;
         }
         &.branch-right3 {
-            background-image: url(../img/branch-right3.png);
+            // background-image: url(../img/branch-right3.png);
+            background-image: url(../img/sprite.png);
+            background-position: -287px -60px;
+            background-size: 300px 120px;
+            background-repeat: no-repeat;
         }
         &.branch-right4 {
-            background-image: url(../img/branch-right4.png);
+            // background-image: url(../img/branch-right4.png);
+            background-image: url(../img/sprite.png);
+            background-position: -287px -88px;
+            background-size: 300px 120px;
+            background-repeat: no-repeat;
         }
     }
+}
+
+.end {
+    display: none;
+    background-color: rgba(0, 0, 0, 0.6);
+    position: absolute;
+    text-align: center;
+    color: #fff;
+    left: 50%;
+    top: 50%;
+    width: 100%;
+    height: 100%;
+    -webkit-transform: translate3d(-50%, -50%, 0);
+            transform: translate3d(-50%, -50%, 0);
+    z-index: 50;
+
+    .title {
+        margin-top: 50%;
+        font-size: 3rem;
+    }
+    .info {
+        width: 300px;
+        text-align: center;
+        margin: 20px 0;
+        position: absolute;
+        -webkit-transform: translate3d(-50%, 0, 0);
+                transform: translate3d(-50%, 0, 0);
+        left: 50%;
+        font-size: 1.5rem;
+        height: 50px;
+        line-height: 2;
+    }
+
+    .play-again {
+        width: 140px;
+        text-align: center;
+        margin: 20px 0;
+        position: absolute;
+        -webkit-transform: translate3d(-50%, 0, 0);
+                transform: translate3d(-50%, 0, 0);
+        left: 50%;
+        font-size: 1.5rem;
+        height: 30px;
+        line-height: 30px;
+        margin-top: 70px;
+        border: 1px solid #fff;
+        border-radius: 5px;
+    }
+
 }
 
 // ip4 and (device-aspect-ratio: 2/3)
@@ -264,11 +365,6 @@ html {
 // ip5 and (device-aspect-ratio: 40/71)
 @media (min-width: 320px) and (max-width: 568px) and (device-aspect-ratio: 40/71) and (-webkit-device-pixel-ratio: 2) and (orientation:portrait) {
     .ip5();
-    // .header {
-    //     .title {
-    //         background-color: grey;
-    //     }
-    // }
 }
 
 // xiaomi
@@ -276,58 +372,28 @@ html {
     // note, 3, 4
     @media (-webkit-device-pixel-ratio: 3) {
         .mi();
-        // .header {
-        //     .title {
-        //         background-color: blue;
-        //     }
-        // }
     }
     // 2s, 2
     @media (-webkit-device-pixel-ratio: 2) {
         .mi();
-        // .header {
-        //     .title {
-        //         background-color: red;
-        //     }
-        // }
     }
 
     // 三星 GM3818
     @media (-webkit-device-pixel-ratio: 1.5) {
         .mi();
-        // .header {
-        //     .title {
-        //         background-color: red;
-        //     }
-        // }
     }
     // S6 edge
     @media (-webkit-device-pixel-ratio: 4) {
         .mi();
-        // .header {
-        //     .title {
-        //         background-color: green;
-        //     }
-        // }
     }
 }
 
 // ip6 Portrait
 @media (min-width: 375px) and (max-width: 667px) and (orientation : portrait) {
     .ip6();
-    // .header {
-    //     .title {
-    //         background-color: black;
-    //     }
-    // }
 }
 
 // ip6+ Portrait
 @media (min-width: 414px) and (max-width: 736px) and (orientation : portrait) {
     .ip6p();
-    // .header {
-    //     .title {
-    //         background-color: #fff;
-    //     }
-    // }
 }

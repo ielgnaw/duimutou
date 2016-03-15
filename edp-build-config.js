@@ -24,6 +24,7 @@ exports.getProcessors = function () {
 };
 
 exports.exclude = [
+    'package.json',
     'tool',
     'doc',
     'test',
