@@ -33,7 +33,7 @@ define(function (require) {
         return this.items[this.index];
     };
 
-    var container = document.querySelector('.branch-container');
+    var container = document.querySelector('.branch-wrapper');
     var TPL = ''
         + '<div class="branch-item current" data-clsrandom="{{clsRandom}}" style="'
         +   'width: {{itemWidth}}px; z-index: {{zIndex}}; '

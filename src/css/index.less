@@ -118,8 +118,18 @@ html {
 @defaultWidth: 270px;
 
 .branch-container {
-    height: 100%;
+    // height: 100%;
+    // position: relative;
+    height: 525px;
     position: relative;
+    overflow: hidden;
+
+    .branch-wrapper {
+        width: 100%;
+        position: absolute;
+        top: 100px;
+        height: 100000px;
+    }
 
     .break-branch {
         position: absolute;
@@ -146,6 +156,7 @@ html {
         left: 0;
 
         &.base {
+            top: 400px;
             // -webkit-transform: translate3d(-50%, 0, 0);
                     // transform: translate3d(-50%, 0, 0);
         }

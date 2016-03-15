@@ -17,7 +17,7 @@ define(function (require) {
     var guideNode = doc.querySelector('.guide-tip');
     var startNode = doc.querySelector('.start');
     var gameNode = doc.querySelector('.game-content');
-    var containerNode = doc.querySelector('.branch-container');
+    var containerNode = doc.querySelector('.branch-wrapper');
 
     /**
      * 左边落下破碎的小木头动画结束的回调函数
@@ -79,9 +79,9 @@ define(function (require) {
 
         branch = new Branch({
             // x: globalData.width - curBranchWidth,
-            x: 30,
+            x: 72,
             y: offsetTop - config.swingBranchTop,
-            vx: 1,
+            vx: 5,
             width: curBranchWidth
         });
 
@@ -123,10 +123,10 @@ define(function (require) {
         branch.changeStyle(breakBranchWidth);
 
         branch = new Branch({
-            x: globalData.width - curBranchWidth,
-            // x: 0,
+            // x: globalData.width - curBranchWidth,
+            x: 72,
             y: offsetTop - config.swingBranchTop,
-            vx: 10,
+            vx: 5,
             width: curBranchWidth
         });
 
@@ -174,6 +174,7 @@ define(function (require) {
             }
             else {
                 console.warn('niubi');
+                rightCut(0);
             }
         }
     }
@@ -211,9 +212,9 @@ define(function (require) {
 
         branch = new Branch({
             // x: globalData.width - curBranchWidth,
-            x: 30,
+            x: 72,
             y: offsetTop - config.swingBranchTop,
-            vx: 1,
+            vx: 5,
             width: curBranchWidth
         });
 

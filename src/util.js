@@ -111,7 +111,6 @@ define(function (require) {
      * @return {Function} 返回 subClass 构造器
      */
     exports.inherits = function (subClass, superClass) {
-
         var Empty = function () {};
         Empty.prototype = superClass.prototype;
         var selfPrototype = subClass.prototype;
