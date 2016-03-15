@@ -13,7 +13,6 @@ define(function (require) {
 
     var exports = {};
 
-
     /**
      * 获取 dom 的前一个 node 节点
      *

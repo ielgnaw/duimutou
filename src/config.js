@@ -27,7 +27,10 @@ define(function (require) {
         swingBranchTop: 40,
 
         // 每根左右摇摆的木头下落的距离
-        dropDistance: 23
+        dropDistance: 20,
+
+        // 页面上最多有几根落下的木头，再多的话，层就要往下滑动了
+        maxBranchNum: 5
     };
 
     return exports;

@@ -20,6 +20,13 @@ define(function (require) {
     var containerNode = doc.querySelector('.branch-wrapper');
 
     /**
+     * 所有已经落下的木头的数量
+     *
+     * @type {number}
+     */
+    var allDownBranchSum = 0;
+
+    /**
      * 左边落下破碎的小木头动画结束的回调函数
      *
      * @param {Object} e 事件对象
@@ -29,6 +36,15 @@ define(function (require) {
         target.parentNode.removeChild(target);
 
         doc.body.addEventListener(globalData.touchStartEvent, dropBranch);
+
+        // if (allDownBranchSum + 1 >= config.maxBranchNum) {
+        //     var transform = getComputedStyle(containerNode).transform || getComputedStyle(containerNode).webkitTransform;
+        //     containerNode.classList.add('go-down');
+        //     containerNode.style.transform =
+        //     containerNode.style.webkitTransform = 'translateY(' + 20 * (allDownBranchSum + 1 - config.maxBranchNum) + 'px)';
+        //     console.warn(branch);
+        //     console.warn(game);
+        // }
     }
 
     /**
@@ -77,11 +93,25 @@ define(function (require) {
         // 这一句要在 new Branch 之前
         branch.changeStyle(breakBranchWidth);
 
+        if (allDownBranchSum + 1 > config.maxBranchNum) {
+            var transform = getComputedStyle(containerNode).transform
+                || getComputedStyle(containerNode).webkitTransform;
+            containerNode.style.transform =
+            containerNode.style.webkitTransform =
+                'translateY(' + 20 * (allDownBranchSum + 1 - config.maxBranchNum) + 'px)';
+
+            // 这个 500ms 是和 .go-down 的动画 500ms 对应的
+            var t = setTimeout(function () {
+                clearTimeout(t);
+                var first = document.querySelector('.branch-wrapper .branch-item');
+                first.parentNode.removeChild(first);
+            }, 500);
+        }
+
         branch = new Branch({
-            // x: globalData.width - curBranchWidth,
-            x: 72,
+            x: globalData.width - curBranchWidth,
             y: offsetTop - config.swingBranchTop,
-            vx: 5,
+            vx: 1,
             width: curBranchWidth
         });
 
@@ -122,11 +152,25 @@ define(function (require) {
         // 这一句要在 new Branch 之前
         branch.changeStyle(breakBranchWidth);
 
+        if (allDownBranchSum + 1 > config.maxBranchNum) {
+            var transform = getComputedStyle(containerNode).transform
+                || getComputedStyle(containerNode).webkitTransform;
+            containerNode.style.transform =
+            containerNode.style.webkitTransform =
+                'translateY(' + 20 * (allDownBranchSum + 1 - config.maxBranchNum) + 'px)';
+
+            // 这个 500ms 是和 .go-down 的动画 500ms 对应的
+            var t = setTimeout(function () {
+                clearTimeout(t);
+                var first = document.querySelector('.branch-wrapper .branch-item');
+                first.parentNode.removeChild(first);
+            }, 500);
+        }
+
         branch = new Branch({
-            // x: globalData.width - curBranchWidth,
-            x: 72,
+            x: 0,
             y: offsetTop - config.swingBranchTop,
-            vx: 5,
+            vx: 1,
             width: curBranchWidth
         });
 
@@ -162,6 +206,7 @@ define(function (require) {
             game.stop();
         }
         else {
+            allDownBranchSum++;
             var breakBranchWidth = dataLeft - branch.x;
             // 左
             if (breakBranchWidth > 0) {
@@ -215,10 +260,9 @@ define(function (require) {
         var offsetTop = document.querySelector('.branch-item').offsetTop;
 
         branch = new Branch({
-            // x: globalData.width - curBranchWidth,
-            x: 72,
+            x: 0,
             y: offsetTop - config.swingBranchTop,
-            vx: 5,
+            vx: 1,
             width: curBranchWidth
         });
 
@@ -236,7 +280,7 @@ define(function (require) {
         });
         game.addSprite(branch);
 
-        // game.render();
+        game.render();
 
         // setTimeout(function () {
         //     // game.removeSprite(branch)

@@ -139,6 +139,12 @@ html {
         position: absolute;
         top: 100px;
         height: 100000px;
+        &.go-down {
+            .trans-property(transform);
+            .trans-duration(.5s);
+            .trans-timing-function(linear);
+            .trans-delay(0s);
+        }
     }
 
     .break-branch {

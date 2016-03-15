@@ -69,6 +69,7 @@ define(function (require) {
 
         this.dom = document.querySelector('.current');
         this.domStyle = this.dom.style;
+        this.dom.branch = this;
 
         this.on('removeSprite', function () {
             this.dom.parentNode.removeChild(this.dom);
